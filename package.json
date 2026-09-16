@@ -1,0 +1,9 @@
+{
+  "name": "desk-study",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Desk Study - Three.js black-and-white pixel desk workstation (local editable copy)",
+  "scripts": {
+    "dev": "node server.js"
+  }
+}
