@@ -19,7 +19,8 @@ button{font-family:inherit;cursor:pointer;background:#fff;border:2px solid #000}
 #topbar nav a{color:#000;text-decoration:none;padding:2px 4px}
 #topbar nav a:hover{background:#000;color:#fff}
 #topbar nav .sep{opacity:.4}
-#sound-btn{border:none;padding:2px 4px 0}
+#sound-btn{border:none;padding:2px 4px 0;cursor:pointer}
+#sound-btn.muted{opacity:.35}
 #view-toggle{position:absolute;top:14px;right:16px;z-index:30;display:flex;border:2px solid #000;border-radius:999px;overflow:hidden}
 #view-toggle button{border:none;background:#fff;color:#000;font-family:'VT323','Courier New',monospace;font-size:16px;letter-spacing:.1em;padding:2px 14px;cursor:pointer}
 #view-toggle button.on{background:#000;color:#fff}
@@ -55,14 +56,14 @@ canvas{display:block;touch-action:none;image-rendering:pixelated}
 #status[hidden]{display:none}
 #list-view{position:absolute;inset:0;background:#fff;z-index:20;display:none;overflow-y:auto;overflow-x:hidden;padding:26px 34px 60px}
 #stage.list-mode #list-view{display:block}
-.lv-head h2{font-family:'VT323','Courier New',monospace;font-size:42px;margin:0;letter-spacing:.04em;line-height:1}
+.lv-head h2{font-family:'VT323','Courier New',monospace;font-size:clamp(48px,6vw,96px);margin:0;letter-spacing:.04em;line-height:1}
 .lv-head .lv-sub{font-family:SimHei,'Microsoft YaHei',sans-serif;font-size:12px;line-height:1.8;max-width:560px;margin:12px 0 30px}
 .lv-cols,.lv-row{display:grid;grid-template-columns:110px 1fr 150px;gap:14px;align-items:baseline}
-.lv-cols{font-family:'VT323','Courier New',monospace;font-size:15px;letter-spacing:.18em;opacity:.55;border-bottom:2px solid #000;padding:0 8px 6px}
-.lv-sec{font-family:'VT323','Courier New',monospace;font-size:22px;letter-spacing:.12em;margin:28px 0 0;padding:6px 8px;border-bottom:2px solid #000;display:flex;align-items:baseline;gap:12px}
+.lv-cols{font-family:'VT323','Courier New',monospace;font-size:15px;letter-spacing:.18em;opacity:.55;padding:6px 8px;background:#fff;z-index:5;position:relative}
+.lv-sec{font-family:'VT323','Courier New',monospace;font-size:22px;letter-spacing:.12em;margin:28px 0 0;padding:6px 8px;display:flex;align-items:baseline;gap:12px}
 .lv-sec .cn{font-family:SimHei,'Microsoft YaHei',sans-serif;font-size:15px;letter-spacing:.1em}
 .lv-sec .cnt{margin-left:auto;font-size:16px;opacity:.55}
-.lv-row{padding:8px;border-bottom:1px solid #000;font-size:13px;cursor:pointer}
+.lv-row{padding:8px;font-size:13px;cursor:pointer}
 .lv-row:hover{background:#000;color:#fff}
 .lv-row .lid{font-family:'VT323','Courier New',monospace;font-size:17px;letter-spacing:.08em}
 .lv-row .ltitle{font-family:SimHei,'Microsoft YaHei',sans-serif;letter-spacing:.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -256,13 +257,14 @@ canvas{display:block;touch-action:none;image-rendering:pixelated}
  </div>
  <div class="loader-foot px">preparing... <span class="cursor">▓</span></div>
 </div>
+<script src="./sfx.js"></script>
 <script src="./list-data.js"></script>
 <script>
 (function(){
  var stage=document.getElementById('stage');
  var vtDesk=document.getElementById('vt-desk'), vtList=document.getElementById('vt-list');
- vtDesk.addEventListener('click',function(){ stage.classList.remove('list-mode'); vtDesk.classList.add('on'); vtList.classList.remove('on'); });
- vtList.addEventListener('click',function(){ stage.classList.add('list-mode'); vtList.classList.add('on'); vtDesk.classList.remove('on'); });
+ vtDesk.addEventListener('click',function(){ if(window.SFX)SFX.play('toggle'); stage.classList.remove('list-mode'); vtDesk.classList.add('on'); vtList.classList.remove('on'); });
+ vtList.addEventListener('click',function(){ if(window.SFX)SFX.play('toggle'); stage.classList.add('list-mode'); vtList.classList.add('on'); vtDesk.classList.remove('on'); });
  // render archive index (tomoya-okada style: id / title / field, grouped sections)
  var groups=window.LIST_DATA||[];
  var total=groups.reduce(function(n,g){return n+g.items.length;},0);
@@ -276,45 +278,37 @@ canvas{display:block;touch-action:none;image-rendering:pixelated}
   });
  });
  document.getElementById('list-view').innerHTML=h;
- // ---- scroll bend: rows arc to the right while scrolling, header stays fixed ----
+ // ---- header dodge: rows arc right around the fixed ID/TITLE/FIELD header ----
  var lv=document.getElementById('list-view');
- var items=[].slice.call(lv.querySelectorAll('.lv-row,.lv-sec')).map(function(el){
-  return {el:el, mid:el.offsetTop+el.offsetHeight/2, x:0};
- });
- var lastTop=lv.scrollTop, velo=0, shift=0, shiftV=0, applied=false, measured=false;
- function measure(){ for(var k=0;k<items.length;k++){ var e=items[k].el; items[k].mid=e.offsetTop+e.offsetHeight/2; } measured=true; }
- lv.addEventListener('scroll',function(){
-  var t=lv.scrollTop; velo+=(t-lastTop); lastTop=t;
- },{passive:true});
+ var lvItems=[].slice.call(lv.querySelectorAll('.lv-row,.lv-sec'));
+ var lvHeader=lv.querySelector('.lv-cols');
+ var LV_AMP=130, LV_RANGE=240, lvApplied=false;
  function lvStep(){
-  var target=Math.max(-140,Math.min(140,velo*2.4));
-  shiftV+=(target-shift)*.18; shiftV*=.78; shift+=shiftV;
-  velo*=.82;
-  if(stage.classList.contains('list-mode')){
-   if(!measured) measure();
-   if(Math.abs(shift)>.3){
-    var st=lv.scrollTop, c=lv.clientHeight/2;
-    for(var i=0;i<items.length;i++){
-     var it=items[i];
-     var dy=(it.mid-st-c)/c;
-     if(dy<-1.2||dy>1.2){ if(it.x){it.el.style.transform='';it.x=0;} continue; }
-     var w=Math.cos(Math.max(-1,Math.min(1,dy))*Math.PI/2);
-     var x=shift*w;
-     it.el.style.transform='translateX('+x.toFixed(1)+'px)'; it.x=x;
-    }
-    applied=true;
-   }else if(applied){
-    for(var j=0;j<items.length;j++){ if(items[j].x){items[j].el.style.transform='';items[j].x=0;} }
-    applied=false;
-   }
-  }else if(applied){
-   for(var j=0;j<items.length;j++){ if(items[j].x){items[j].el.style.transform='';items[j].x=0;} }
-   applied=false;
+  if(!stage.classList.contains('list-mode')){
+   if(lvApplied){ for(var j=0;j<lvItems.length;j++) lvItems[j].style.transform=''; lvApplied=false; }
+   return;
   }
+  var s=lv.scrollTop, lvr=lv.getBoundingClientRect();
+  // header motion: starts in flow above first entry, slides down on scroll, parks at upper-third line
+  var nat=lvHeader.offsetTop, T=Math.round(0.33*lv.clientHeight);
+  var ty=Math.max(0,Math.round(Math.min(nat+s,T)-(nat-s)));
+  lvHeader.style.transform=ty>0?'translateY('+ty+'px)':'';
+  var hy=lvHeader.getBoundingClientRect().bottom;
+  var any=false;
+  for(var i=0;i<lvItems.length;i++){
+   var el=lvItems[i], r=el.getBoundingClientRect();
+   if(r.bottom<lvr.top||r.top>lvr.bottom) continue;
+   var d=(r.top+r.height/2)-hy;
+   var t=Math.max(-1,Math.min(1,d/LV_RANGE));
+   var x=Math.round(LV_AMP*Math.pow(Math.cos(t*Math.PI/2),2));
+   if(x>0){ el.style.transform='translateX('+x+'px)'; any=true; }
+   else if(el.style.transform) el.style.transform='';
+  }
+  lvApplied=any;
  }
  function lvTick(){ lvStep(); requestAnimationFrame(lvTick); }
  lvTick();
- window.lvDebug={ setVelo:function(v){velo=v;}, getShift:function(){return shift;}, pump:function(n){for(var i=0;i<n;i++)lvStep();} };
+ window.lvDebug={ amp:function(v){if(v)LV_AMP=v;return LV_AMP;}, range:function(v){if(v)LV_RANGE=v;return LV_RANGE;}, pump:function(n){for(var i=0;i<n;i++)lvStep();} };
 })();
 </script>
 <script src="./archive-books.js"></script>

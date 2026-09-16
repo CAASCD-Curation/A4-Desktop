@@ -1,0 +1,219 @@
+/* ============================================================
+   scatter.css — 全部案例散点漂游页（视频复刻版）
+   白底 · 照片随机散布缓慢漂游 · 悬停放大 · 点击出小浮窗
+   ============================================================ */
+
+@font-face {
+  font-family: "Pantasia Regular";
+  src: url("./fonts/Pantasia-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --ink: #000;
+  --paper: #fff;
+  --pop-w: 380px;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Pantasia Regular", "PingFang SC", "Microsoft YaHei", monospace;
+  overflow: hidden;
+}
+
+/* ---------- 照片漂游画布 ---------- */
+#field {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  cursor: default;
+  transform-origin: 50% 50%;   /* 呼吸缩放围绕画面中心 */
+  will-change: transform;
+}
+
+.tile {
+  position: absolute;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+  will-change: transform;
+}
+
+.tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;          /* 裁剪，不压扁 */
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.tile:hover img {
+  transform: scale(1.55);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- 中央署名（视频同款） ---------- */
+.s-credit {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 5;
+  line-height: 1.7;
+}
+
+.s-credit-main {
+  font-size: 1.7rem;
+  letter-spacing: 0.35em;
+  text-indent: 0.35em; /* 视觉居中修正末字符间距 */
+  white-space: nowrap;
+}
+
+.s-credit-sub {
+  margin-top: 0.35em;
+  font-size: 0.72rem;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  white-space: nowrap;
+}
+
+/* ---------- 四角标注 ---------- */
+.s-corner {
+  position: fixed;
+  z-index: 10;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  line-height: 1.6;
+  opacity: 0.85;
+  pointer-events: none;
+  max-width: 34vw;
+}
+
+.s-tl { left: 14px;  top: 12px; }
+.s-tr { right: 14px; top: 12px; text-align: right; }
+.s-bl { left: 14px;  bottom: 12px; }
+.s-br { right: 14px; bottom: 12px; text-align: right; }
+
+/* INDEX 是唯一可点的角标 */
+a.s-tr {
+  color: var(--ink);
+  text-decoration: none;
+  pointer-events: auto;
+}
+a.s-tr:hover {
+  text-decoration: underline;
+}
+
+/* ---------- 内容小浮窗 ---------- */
+.s-pop-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.s-pop {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 200;
+  width: min(var(--pop-w), 88vw);
+  max-height: 86vh;
+  overflow-y: auto;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 14px 16px 16px;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.15);
+}
+
+.s-pop-close {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+}
+.s-pop-close:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.s-pop-imgwrap {
+  border: 1px solid var(--ink);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.s-pop-imgwrap img {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+}
+
+.s-pop-no {
+  font-size: 0.68rem;
+  letter-spacing: 0.25em;
+  opacity: 0.7;
+}
+
+.s-pop-title {
+  margin-top: 4px;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  padding-right: 30px; /* 避开关闭按钮 */
+}
+
+.s-pop-year {
+  margin-top: 2px;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  opacity: 0.75;
+}
+
+.s-pop-note {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  line-height: 1.75;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.s-pop-tags {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.s-pop-tags span {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  border: 1px solid var(--ink);
+  padding: 2px 8px;
+}
+
+/* ---------- 小屏 ---------- */
+@media (max-width: 640px) {
+  .s-credit-main { font-size: 1.1rem; }
+  .s-credit-sub { font-size: 0.55rem; }
+}

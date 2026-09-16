@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>桌面档案 · 全部案例</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel="stylesheet" href="./scatter.css">
+</head>
+<body>
+  <!-- 四角标注（视频同款） -->
+  <div class="s-corner s-tl">桌面档案<br>DESK ARCHIVE</div>
+  <a class="s-corner s-tr" href="./index.html">INDEX<br>返回档案库</a>
+  <div class="s-corner s-bl" id="s-count"></div>
+  <div class="s-corner s-br">A LIFE OF THE DESK<br>©2026</div>
+
+  <!-- 照片漂游画布 -->
+  <div id="field"></div>
+
+  <!-- 点击照片后的内容小浮窗 -->
+  <div class="s-pop" id="s-pop" hidden>
+    <button class="s-pop-close" id="s-pop-close" aria-label="关闭">×</button>
+    <div class="s-pop-imgwrap"><img id="s-pop-img" alt=""></div>
+    <div class="s-pop-body">
+      <div class="s-pop-no" id="s-pop-no"></div>
+      <div class="s-pop-title" id="s-pop-title"></div>
+      <div class="s-pop-year" id="s-pop-year"></div>
+      <p class="s-pop-note" id="s-pop-note"></p>
+      <div class="s-pop-tags" id="s-pop-tags"></div>
+    </div>
+  </div>
+  <div class="s-pop-mask" id="s-pop-mask" hidden></div>
+
+<script src="./stage-data.js"></script>
+<script src="./scatter.js"></script>
+</body>
+</html>

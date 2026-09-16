@@ -31,11 +31,14 @@
 
   <!-- 任务栏 -->
   <footer class="taskbar" id="taskbar">
+    <button class="start-button power-button" id="power-button" type="button" title="关机 · 返回档案库" aria-label="关机，返回主页面" onclick="location.href='../index.html'">
+      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M12 3v9" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/><path d="M6.3 6.5a8 8 0 1 0 11.4 0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg>
+    </button>
+    <div class="taskbar-divider" aria-hidden="true"></div>
     <button class="start-button" id="start-button" type="button">
       <span class="start-logo">▦</span>
       <span class="start-text">开始</span>
     </button>
-    <div class="taskbar-divider" aria-hidden="true"></div>
     <div class="task-buttons" id="task-buttons"><!-- 打开的程序标签由 JS 生成 --></div>
     <div class="taskbar-spacer"></div>
     <div class="tray">

@@ -4435,3 +4435,14 @@ input[type="range"]::-moz-range-thumb {
   font-weight: normal;
   text-shadow: none;
 }
+
+/* 电源键：关机 = 返回主页面 */
+.power-button {
+  color: #c00000;
+  padding: 0 7px;
+  justify-content: center;
+}
+
+.power-button:active {
+  color: #ffffff;
+}

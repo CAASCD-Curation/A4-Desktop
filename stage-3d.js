@@ -121,7 +121,7 @@
   function shiftTo(pIndex) {
     gsap.to(track, {
       duration: 0.8, overwrite: true,
-      cur: Math.floor(pIndex) + 1,
+      cur: pIndex,
       ease: 'power3.out',
       onUpdate: redraw
     });
@@ -143,7 +143,7 @@
       group.children[0].material.opacity = Math.min(1, o.alpha * 1.4);  // 白框同步
       group.children[0].material.color.setScalar(Math.max(0.25, o.dim)); // 侧框同步压暗
     }
-    const centered = Math.round(sel) % total;
+    const centered = ((Math.round(sel) % total) + total) % total;
     const ei = flowItems[centered].entryIndex;
     if (ei !== lastCentered && window.hShow) {
       lastCentered = ei;
@@ -151,8 +151,10 @@
     }
   }
 
-  // ---- 横向滚动：scrollLeft 驱动 + 吸附 + 滚轮换向 ----
+  // ---- 横向滚动：scrollLeft 驱动 + 空闲吸附 + 滚轮换向 ----
+  // 统一映射：第 k 张居中 ↔ scrollLeft = k·step，step = max/total，全程无偏移
   const maxScroll = () => dist.scrollWidth - hs.clientWidth;
+  const stepPx = () => maxScroll() / total;
   let snapTimer = null;
   hs.addEventListener('scroll', () => {
     const max = maxScroll();
@@ -160,30 +162,37 @@
     shiftTo((hs.scrollLeft / max) * total);
     clearTimeout(snapTimer);
     snapTimer = setTimeout(() => {
-      const step = max / total;
-      // 居中第 k 张 ↔ scrollLeft=(k-1)·step
-      const target = Math.round(hs.scrollLeft / step - 0.5) * step;
-      if (Math.abs(target - hs.scrollLeft) > 2) hs.scrollTo({ left: target, behavior: 'smooth' });
-    }, 160);
+      const s = stepPx();
+      const target = Math.round(hs.scrollLeft / s) * s;
+      if (Math.abs(target - hs.scrollLeft) > 1) hs.scrollTo({ left: target, behavior: 'smooth' });
+    }, 180);
   }, { passive: true });
 
   window.addEventListener('wheel', (e) => {
     e.preventDefault();
-    hs.scrollLeft += (e.deltaY + e.deltaX) * 1.1;
+    let d = e.deltaY + e.deltaX;
+    if (e.deltaMode === 1) d *= 16;            // 行模式（部分浏览器）换算成像素
+    hs.scrollLeft += (d / 100) * stepPx();     // 一格滚轮 ≈ 移动一张照片，任何屏宽手感一致
   }, { passive: false });
 
   // ---- 跳转 API ----
   function scrollToFlow(k, behavior) {
     const max = maxScroll();
-    const p = (((k - 1 + total) % total) + 0.5) / total;
-    hs.scrollTo({ left: p * max, behavior: behavior || 'smooth' });
+    const kk = ((k % total) + total) % total;
+    hs.scrollTo({ left: (kk / total) * max, behavior: behavior || 'smooth' });
   }
   window.hGoEntry = function (i, instant) {
     if (i == null || i < 0 || i >= entries.length) return;
     if (window.hShow) window.hShow(i);
     lastCentered = i;
     const k = flowItems.findIndex(f => f.entryIndex === i);
-    if (k >= 0) scrollToFlow(k, instant ? 'auto' : 'smooth');
+    if (k >= 0) {
+      if (instant) {           // 深链接/首跳：立刻到位，不播放过渡
+        track.cur = ((k % total) + total) % total;
+        redraw();
+      }
+      scrollToFlow(k, instant ? 'auto' : 'smooth');
+    }
   };
   window.hGoStage = function (si) {
     const k = flowItems.findIndex(f => entries[f.entryIndex].stageIndex === si);
@@ -208,6 +217,12 @@
       redraw();
       const m = /go=(\d+)/.exec(location.hash || '');
       if (m) window.hGoEntry(parseInt(m[1], 10), true);
+      // 首页六模块带入的 ?stage=<阶段key>：定位到该阶段第一张有图的条目
+      const role = new URLSearchParams(location.search).get('stage');
+      if (role) {
+        const idx = entries.findIndex(x => x.stageKey === role);
+        if (idx >= 0) window.hGoEntry(idx, true);
+      }
     });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

@@ -112,9 +112,13 @@ function roleMeshes(role) {
  return meshes;
 }
 // Hover wins over the carousel selection; otherwise the selection glows.
+// Desk and chair are scenery: never color-filled.
+const NOFILL = { desk: 1, chair: 1, chairFrame: 1 };
 function refreshHighlight() {
+ const role = hoverGroup ? hoverGroup.role : selectedRole;
  const meshes = hoverGroup ? hoverGroup.meshes : selectedRole ? roleMeshes(selectedRole) : null;
- if (meshes && meshes.length) ink.setHover(meshes, ACCENT); else ink.setHover(null);
+ if (meshes && meshes.length && !NOFILL[role]) ink.setHover(meshes, ACCENT); else ink.setHover(null);
+ window.deskDebug = { ...window.deskDebug, fillRole: (meshes && meshes.length && !NOFILL[role]) ? role : null };
 }
 function showPanel(role) {
  const info = OBJECT_INDEX[role]; if (!info) return;
@@ -136,7 +140,7 @@ function select(role) {
  window.deskDebug = { ...window.deskDebug, selectedRole: role };
 }
 // Bottom bar is now a link bar to the stage sub-page; it no longer selects 3D objects.
-for (const cell of document.querySelectorAll('#carousel .cell')) cell.addEventListener('click', () => { if (cell.dataset.link) location.href = cell.dataset.link; });
+for (const cell of document.querySelectorAll('#carousel .cell')) cell.addEventListener('click', () => { if (cell.dataset.link) { if (window.SFX) SFX.go(cell.dataset.link, 'click'); else location.href = cell.dataset.link; } });
 function updateHover() {
  raycaster.setFromCamera(pointer, camera);
  let group = null;
@@ -188,6 +192,7 @@ function openArchive(role) {
   const y = document.createElement('span'); y.className = 'y'; y.textContent = e.year;
   li.append(n, t, y);
   li.addEventListener('click', () => {
+   if (window.SFX) SFX.play('click');
    for (const x of arcList.querySelectorAll('li.active')) x.classList.remove('active');
    li.classList.add('active'); showArcDetail(e, i, data.length);
   });
@@ -198,12 +203,14 @@ function openArchive(role) {
  window.deskDebug = { ...window.deskDebug, archive: role };
 }
 function closeArchive() { archiveEl.hidden = true; window.deskDebug = { ...window.deskDebug, archive: null }; }
-document.getElementById('arc-close').addEventListener('click', closeArchive);
+document.getElementById('arc-close').addEventListener('click', () => { if (window.SFX) SFX.play('click'); closeArchive(); });
 addEventListener('keydown', e => { if (e.key === 'Escape') closeArchive(); });
 document.getElementById('open-archive').addEventListener('click', () => {
- if (selectedRole === 'greenCabinet') { location.href = './card-index.html'; return; }
- if (selectedRole === 'computer') { location.href = './retro-desktop/index.html'; return; }
- if (selectedRole) openArchive(selectedRole);
+ if (selectedRole === 'greenCabinet') { if (window.SFX) { SFX.go('./card-index.html', 'drawer'); return; } location.href = './card-index.html'; return; }
+ if (selectedRole === 'computer') { if (window.SFX) { SFX.go('./retro-desktop/index.html', 'boot'); return; } location.href = './retro-desktop/index.html'; return; }
+ if (selectedRole === 'book') { if (window.SFX) { SFX.go('./book-wall/index.html', 'book'); return; } location.href = './book-wall/index.html'; return; }
+ if (selectedRole === 'frame') { if (window.SFX) { SFX.go('./scatter.html', 'click'); return; } location.href = './scatter.html'; return; }
+ if (selectedRole) { if (window.SFX) SFX.play('click'); openArchive(selectedRole); }
 });
 // Click (not drag) on a scene object opens its archive.
 let downPos = null;
@@ -213,8 +220,11 @@ renderer.domElement.addEventListener('pointerup', e => {
  const dx = e.clientX - downPos[0], dy = e.clientY - downPos[1]; downPos = null;
  if (dx * dx + dy * dy > 25) return;
  if (!hoverGroup) return;
- if (hoverGroup.role === 'greenCabinet') { location.href = './card-index.html'; return; }
- if (hoverGroup.role === 'computer') { location.href = './retro-desktop/index.html'; return; }
+ if (hoverGroup.role === 'greenCabinet') { if (window.SFX) { SFX.go('./card-index.html', 'drawer'); return; } location.href = './card-index.html'; return; }
+ if (hoverGroup.role === 'computer') { if (window.SFX) { SFX.go('./retro-desktop/index.html', 'boot'); return; } location.href = './retro-desktop/index.html'; return; }
+ if (hoverGroup.role === 'book') { if (window.SFX) { SFX.go('./book-wall/index.html', 'book'); return; } location.href = './book-wall/index.html'; return; }
+ if (hoverGroup.role === 'frame') { if (window.SFX) { SFX.go('./scatter.html', 'click'); return; } location.href = './scatter.html'; return; }
+ if (window.SFX) SFX.play('click');
  openArchive(hoverGroup.role);
 });
 window.deskOpenArchive = openArchive;
@@ -222,9 +232,16 @@ function dolly(factor) {
  camera.position.sub(controls.target).multiplyScalar(factor).add(controls.target);
  controls.update();
 }
-document.getElementById('zoom-in').addEventListener('click', () => dolly(.8));
-document.getElementById('zoom-out').addEventListener('click', () => dolly(1.25));
-document.getElementById('reset-view').addEventListener('click', () => { if (model) frameDesk(); });
+document.getElementById('zoom-in').addEventListener('click', () => { if (window.SFX) SFX.play('click'); dolly(.8); });
+document.getElementById('zoom-out').addEventListener('click', () => { if (window.SFX) SFX.play('click'); dolly(1.25); });
+document.getElementById('reset-view').addEventListener('click', () => { if (window.SFX) SFX.play('click'); if (model) frameDesk(); });
+// Sound on/off toggle in the top nav.
+const soundBtn = document.getElementById('sound-btn');
+if (soundBtn) soundBtn.addEventListener('click', () => {
+ const m = window.SFX ? SFX.toggle() : false;
+ soundBtn.classList.toggle('muted', m);
+ if (!m && window.SFX) SFX.play('click');
+});
 // Test hooks.
 window.deskHoverAt = role => {
  for (const [mesh, group] of meshGroup) {
