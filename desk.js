@@ -135,7 +135,8 @@ function select(role) {
  refreshHighlight();
  window.deskDebug = { ...window.deskDebug, selectedRole: role };
 }
-for (const cell of document.querySelectorAll('#carousel .cell')) cell.addEventListener('click', () => select(cell.dataset.role));
+// Bottom bar is now a link bar to the stage sub-page; it no longer selects 3D objects.
+for (const cell of document.querySelectorAll('#carousel .cell')) cell.addEventListener('click', () => { if (cell.dataset.link) location.href = cell.dataset.link; });
 function updateHover() {
  raycaster.setFromCamera(pointer, camera);
  let group = null;
@@ -201,6 +202,7 @@ document.getElementById('arc-close').addEventListener('click', closeArchive);
 addEventListener('keydown', e => { if (e.key === 'Escape') closeArchive(); });
 document.getElementById('open-archive').addEventListener('click', () => {
  if (selectedRole === 'greenCabinet') { location.href = './card-index.html'; return; }
+ if (selectedRole === 'computer') { location.href = './retro-desktop/index.html'; return; }
  if (selectedRole) openArchive(selectedRole);
 });
 // Click (not drag) on a scene object opens its archive.
@@ -212,6 +214,7 @@ renderer.domElement.addEventListener('pointerup', e => {
  if (dx * dx + dy * dy > 25) return;
  if (!hoverGroup) return;
  if (hoverGroup.role === 'greenCabinet') { location.href = './card-index.html'; return; }
+ if (hoverGroup.role === 'computer') { location.href = './retro-desktop/index.html'; return; }
  openArchive(hoverGroup.role);
 });
 window.deskOpenArchive = openArchive;
@@ -221,7 +224,7 @@ function dolly(factor) {
 }
 document.getElementById('zoom-in').addEventListener('click', () => dolly(.8));
 document.getElementById('zoom-out').addEventListener('click', () => dolly(1.25));
-document.getElementById('reset-view').addEventListener('click', () => { if (model) frameModel(); });
+document.getElementById('reset-view').addEventListener('click', () => { if (model) frameDesk(); });
 // Test hooks.
 window.deskHoverAt = role => {
  for (const [mesh, group] of meshGroup) {
@@ -251,6 +254,32 @@ function frameModel() {
  camera.position.copy(center).add(new THREE.Vector3(-.78, .68, -1).normalize().multiplyScalar(distance));
  camera.lookAt(center); controls.update();
 }
+function roleBox(roles) {
+ const box = new THREE.Box3(); let found = false;
+ model.traverse(node => {
+  if (!node.isMesh) return;
+  if (roles.includes(classify(node, model).role)) { box.expandByObject(node); found = true; }
+ });
+ return found ? box : null;
+}
+// Initial / reset view: close-up of the desk surface from the chair side,
+// instead of the whole-room overview.
+function frameDesk() {
+ const box = roleBox(['computer', 'phone', 'note']);
+ if (!box) { frameModel(); return; }
+ const center = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3());
+ center.y -= .25; // aim between the monitor and the desktop surface
+ controls.target.copy(center);
+ const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
+ const distance = Math.max(size.y / 2 / Math.tan(halfFov), Math.max(size.x, size.z) / 2 / (Math.tan(halfFov) * camera.aspect)) * 1.25;
+ const chair = roleBox(['chair', 'chairFrame']);
+ const dir = chair ? chair.getCenter(new THREE.Vector3()).sub(center).setY(0).normalize() : new THREE.Vector3(-.6, 0, -1).normalize();
+ dir.y = .55; dir.normalize();
+ camera.position.copy(center).add(dir.multiplyScalar(distance));
+ camera.lookAt(center); controls.update();
+ window.deskCam = { camera, controls };
+ window.deskRoleBox = roleBox;
+}
 async function load() {
  try {
   const gltf = await new GLTFLoader().loadAsync(window.deskDebug.modelUrl, xhr => {
@@ -271,7 +300,7 @@ async function load() {
       node.distance = 2.6; node.decay = 2;
     }
   });
-  scene.add(wrapper); wrapper.updateMatrixWorld(true); frameModel(); buildHoverGroups();
+  scene.add(wrapper); wrapper.updateMatrixWorld(true); frameDesk(); buildHoverGroups();
   stepStatus(GLB_STEP, 'OK', true); completedSteps = GLB_STEP + 1; glbFraction = 0; updateLoader();
   glbDone = true; maybeFinishLoader();
   select('book');

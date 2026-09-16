@@ -84,20 +84,22 @@ canvas{display:block;touch-action:none;image-rendering:pixelated}
 #open-archive:hover{background:#000;color:#fff}
 
 /* ---- bottom carousel ---- */
-#carousel{grid-area:car;display:grid;grid-template-columns:repeat(6,1fr);border-top:2px solid #000;background:#fff}
+#carousel{grid-area:car;display:grid;grid-template-columns:64px repeat(6,1fr) 64px;border-top:2px solid #000;background:#fff}
 .cell{border:none;border-right:2px solid #000;padding:10px 12px 8px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:#fff;color:#000}
 .cell:last-child{border-right:none}
 .cell .num{font-family:'VT323','Courier New',monospace;font-size:15px;opacity:.6}
 .cell svg{width:44px;height:44px}
 .cell .label{font-family:'VT323','Courier New',monospace;font-size:17px;letter-spacing:.18em;border-top:2px solid currentColor;padding-top:3px;width:100%}
 .cell:hover{background:#000;color:#fff}
+.cell.arrow{align-items:center;justify-content:center;padding:0;font-size:26px}
+.cell .label small{font-size:10px;letter-spacing:.16em;opacity:.6;margin-left:8px}
 .cell.selected,.cell.selected:hover{background:#3d7bff;color:#fff}
 .cell.selected .num{opacity:.85}
 
 @media(max-width:960px){
  #layout{grid-template-columns:0 1fr 0}
  aside{display:none}
- #carousel{grid-template-columns:repeat(3,1fr)}
+ #carousel{grid-template-columns:repeat(4,1fr)}
 }
 
 /* ---- archive overlay (object sub-page) ---- */
@@ -198,15 +200,25 @@ canvas{display:block;touch-action:none;image-rendering:pixelated}
  </aside>
 
  <footer id="carousel">
-  <button class="cell selected" data-role="book"><span class="num">01</span><svg id="icon-book" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M8 12h24v6H8zM10 20h24v6H10zM8 28h24v6H8zM14 12v6M16 20v6M14 28v6M36 8v30"/></svg><span class="label">BOOKS</span></button>
-  <button class="cell" data-role="phone"><span class="num">02</span><svg id="icon-phone" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M10 8h10l3 8-5 4a22 22 0 0 0 10 10l4-5 8 3v10c0 2-2 4-4 4C20 42 6 28 6 12c0-2 2-4 4-4z"/></svg><span class="label">TELEPHONE</span></button>
-  <button class="cell" data-role="computer"><span class="num">03</span><svg id="icon-computer" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="6" y="8" width="26" height="20"/><path d="M14 34h16M22 28v6M36 14h8v26h-8zM39 20h2M39 34h2"/></svg><span class="label">COMPUTER</span></button>
-  <button class="cell" data-role="note"><span class="num">04</span><svg id="icon-note" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="10" y="8" width="28" height="28"/><path d="M16 16h12M16 22h16M30 30l10 10M34 26l6 6"/></svg><span class="label">NOTES</span></button>
-  <button class="cell" data-role="frame"><span class="num">05</span><svg id="icon-frame" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="8" y="8" width="32" height="32"/><path d="M14 30l7-8 5 6 4-5 6 7v4H14zM18 15h4v4h-4z"/></svg><span class="label">FRAME</span></button>
-  <button class="cell" data-role="lamp"><span class="num">06</span><svg id="icon-lamp" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M14 40h20M24 40V26M24 26L14 12M14 12l8-6 10 8-8 6zM22 12h4"/></svg><span class="label">LAMP</span></button>
+  <button class="cell arrow" data-link="./stage.html" aria-label="上一个">←</button>
+  <button class="cell" data-link="./stage.html"><span class="num">01</span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 40h36M14 40V26M34 40V26M8 26h32M12 20l10-10 6 6-10 10zM28 10l6-6 6 6-6 6z"/></svg><span class="label">建立<small>BUILD</small></span></button>
+  <button class="cell" data-link="./stage.html"><span class="num">02</span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 8h14v32H8zM12 12h6v10h-6zM26 24h14M34 17l7 7-7 7M26 12v24"/></svg><span class="label">进入<small>ENTER</small></span></button>
+  <button class="cell" data-link="./stage.html"><span class="num">03</span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><circle cx="24" cy="24" r="14"/><path d="M20 17l11 7-11 7z"/></svg><span class="label">运行<small>OPERATE</small></span></button>
+  <button class="cell" data-link="./stage.html"><span class="num">04</span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><path d="M30 8a9 9 0 0 0-10 12L8 32l8 8 12-12a9 9 0 0 0 12-10l-7 7-8-2-2-8zM12 36l4-4"/></svg><span class="label">维护<small>MAINTAIN</small></span></button>
+  <button class="cell" data-link="./stage.html"><span class="num">05</span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><path d="M40 8H26v32h14zM36 12h-6v10h6zM8 24h14M15 17l-8 7 8 7M22 12v24"/></svg><span class="label">退出<small>RETIRE</small></span></button>
+  <button class="cell" data-link="./stage.html"><span class="num">06</span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 24c4-9 10-9 14 0s10 9 14 0M10 30c4-9 10-9 14 0s10 9 14 0M24 8v6M24 34v6"/></svg><span class="label">延续<small>REMAIN</small></span></button>
+  <button class="cell arrow" data-link="./stage.html" aria-label="下一个">→</button>
  </footer>
 
- <div hidden><svg id="icon-greenCabinet" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="12" y="4" width="24" height="40"/><path d="M12 14h24M12 24h24M12 34h24M18 9h12M18 19h12M18 29h12M18 39h12"/></svg></div>
+ <div hidden>
+  <svg id="icon-book" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M8 12h24v6H8zM10 20h24v6H10zM8 28h24v6H8zM14 12v6M16 20v6M14 28v6M36 8v30"/></svg>
+  <svg id="icon-phone" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M10 8h10l3 8-5 4a22 22 0 0 0 10 10l4-5 8 3v10c0 2-2 4-4 4C20 42 6 28 6 12c0-2 2-4 4-4z"/></svg>
+  <svg id="icon-computer" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="6" y="8" width="26" height="20"/><path d="M14 34h16M22 28v6M36 14h8v26h-8zM39 20h2M39 34h2"/></svg>
+  <svg id="icon-note" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="10" y="8" width="28" height="28"/><path d="M16 16h12M16 22h16M30 30l10 10M34 26l6 6"/></svg>
+  <svg id="icon-frame" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="8" y="8" width="32" height="32"/><path d="M14 30l7-8 5 6 4-5 6 7v4H14zM18 15h4v4h-4z"/></svg>
+  <svg id="icon-lamp" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M14 40h20M24 40V26M24 26L14 12M14 12l8-6 10 8-8 6zM22 12h4"/></svg>
+  <svg id="icon-greenCabinet" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="12" y="4" width="24" height="40"/><path d="M12 14h24M12 24h24M12 34h24M18 9h12M18 19h12M18 29h12M18 39h12"/></svg>
+ </div>
 
 </div>
 <div id="archive" hidden>

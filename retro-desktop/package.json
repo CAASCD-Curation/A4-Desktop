@@ -1,0 +1,9 @@
+{
+  "name": "retro-os-98-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "复古 Windows 98 风格桌面框架（第一轮：桌面框架）",
+  "scripts": {
+    "dev": "node server.js"
+  }
+}

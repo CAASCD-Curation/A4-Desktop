@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RETRO-OS 98 · 桌面</title>
+
+  <!-- 等宽档案字体：VT323（复古终端）+ Space Mono，离线时回退 Courier New -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono:wght@400;700&family=DotGothic16&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css?v=23" />
+</head>
+<body>
+  <!-- CRT 效果层：扫描线 + 噪点 + 轻微暗角 -->
+  <div class="crt-overlay" aria-hidden="true"></div>
+  <div class="crt-noise" aria-hidden="true"></div>
+  <div class="crt-vignette" aria-hidden="true"></div>
+
+  <!-- 桌面区域：图标 + 窗口 -->
+  <main id="desktop" class="desktop">
+
+    <!-- 桌面图标由 JS 动态生成（六个分类） -->
+    <div id="icon-layer" class="icon-layer"></div>
+
+    <!-- 窗口层：应用窗口、错误弹窗、保存对话框都挂在这里 -->
+    <div id="window-layer" class="window-layer"></div>
+
+  </main>
+
+  <!-- 任务栏 -->
+  <footer class="taskbar" id="taskbar">
+    <button class="start-button" id="start-button" type="button">
+      <span class="start-logo">▦</span>
+      <span class="start-text">开始</span>
+    </button>
+    <div class="taskbar-divider" aria-hidden="true"></div>
+    <div class="task-buttons" id="task-buttons"><!-- 打开的程序标签由 JS 生成 --></div>
+    <div class="taskbar-spacer"></div>
+    <div class="tray">
+      <span class="tray-item tray-sound" title="音量">🔊</span>
+      <span class="tray-clock" id="tray-clock">--:--</span>
+    </div>
+  </footer>
+
+  <!-- 「开始」菜单 -->
+  <nav class="start-menu" id="start-menu" hidden>
+    <div class="start-menu-banner">RETRO-OS 98</div>
+    <ul class="start-menu-list">
+      <li data-open="gather"><svg class="start-ico" viewBox="0 0 32 32"><path d="M4 6 h10.5 l2.5 3.5 H28 v3 H4 Z" fill="#ffffff" stroke="#000000" stroke-width="1.6"/><path d="M4 11.5 h24 v13.5 H4 Z" fill="#ffffff" stroke="#000000" stroke-width="1.6"/></svg>聚集</li>
+      <li data-open="labor"><svg class="start-ico" viewBox="0 0 32 32"><path d="M8 3.5 h11.5 l4.5 4.5 v20 H8 Z" fill="#ffffff" stroke="#000000" stroke-width="1.6"/><path d="M19.5 3.5 v4.5 h4.5" fill="none" stroke="#000000" stroke-width="1.6"/><line x1="11" y1="14" x2="22" y2="14" stroke="#000000" stroke-width="1.5"/><line x1="11" y1="18" x2="22" y2="18" stroke="#000000" stroke-width="1.5"/><line x1="11" y1="22" x2="18" y2="22" stroke="#000000" stroke-width="1.5"/></svg>劳作</li>
+      <li data-open="watch"><svg class="start-ico" viewBox="0 0 32 32"><rect x="4" y="5" width="24" height="18" rx="2.5" fill="#ffffff" stroke="#000000" stroke-width="1.6"/><path d="M13.5 10.5 l7 3.5 -7 3.5 Z" fill="#000000"/><line x1="12" y1="28" x2="20" y2="28" stroke="#000000" stroke-width="1.6"/><line x1="16" y1="23.5" x2="16" y2="28" stroke="#000000" stroke-width="1.6"/></svg>观看</li>
+      <li data-open="wait"><svg class="start-ico" viewBox="0 0 32 32"><rect x="7" y="3" width="18" height="3" fill="#000000"/><rect x="7" y="26" width="18" height="3" fill="#000000"/><path d="M10 6 h12 v1.4 l-4.2 6.8 v1.6 l4.2 6.8 v1.4 H10 v-1.4 l4.2-6.8 v-1.6 L10 7.4 Z" fill="#ffffff" stroke="#000000" stroke-width="1.5"/><path d="M13 8.4 h6 l-3 4.6 Z" fill="#000000"/><path d="M12.6 23.6 h6.8 l-1.6-2.8 h-3.6 Z" fill="#000000"/></svg>等待</li>
+      <li data-open="transgress"><svg class="start-ico" viewBox="0 0 32 32"><rect x="5" y="3" width="21" height="17" fill="#ffffff" stroke="#000000" stroke-width="1.6"/><rect x="7.5" y="5.5" width="16" height="11" fill="#ffffff" stroke="#000000" stroke-width="1.2"/><line x1="9.5" y1="13" x2="14" y2="8.5" stroke="#000000" stroke-width="1"/><line x1="12" y1="14" x2="17.5" y2="8.5" stroke="#000000" stroke-width="1"/><line x1="15" y1="14.5" x2="21" y2="8.5" stroke="#000000" stroke-width="1"/><rect x="7" y="22.2" width="17" height="3.4" fill="#ffffff" stroke="#000000" stroke-width="1.3"/><rect x="3" y="28" width="19" height="2.6" fill="#ffffff" stroke="#000000" stroke-width="1.3"/></svg>越界</li>
+      <li data-open="absent"><svg class="start-ico" viewBox="0 0 32 32"><path d="M8 15 a8 9 0 0 1 16 0 v7.4 l1.8 3.2 -2.8 1.2 -1.7-1.4 v1.3 h-11.6 v-1.3 l-1.7 1.4 -2.8-1.2 1.8-3.2 Z" fill="#ffffff" stroke="#000000" stroke-width="1.5"/><ellipse cx="12.7" cy="11.2" rx="2.7" ry="3.3" fill="#ffffff" stroke="#000000" stroke-width="1.2"/><ellipse cx="19.3" cy="11.2" rx="2.7" ry="3.3" fill="#ffffff" stroke="#000000" stroke-width="1.2"/><circle cx="13.4" cy="11.8" r="1.3" fill="#000000"/><circle cx="18.6" cy="11.8" r="1.3" fill="#000000"/><path d="M13.6 14.4 h4.8 l-2.4 2.6 Z" fill="#000000"/><path d="M9.5 16.2 q6.5 3.4 13 0 v3 q-6.5 3.4 -13 0 Z" fill="#000000"/></svg>缺席</li>
+      <li data-open="mine"><svg class="start-ico" viewBox="0 0 32 32"><circle cx="15" cy="18" r="9" fill="#000000"/><ellipse cx="11.5" cy="14.5" rx="2" ry="1.6" fill="#ffffff"/><rect x="12.5" y="7" width="5" height="3.5" fill="#000000"/><path d="M17.5 7 q4 -1.5 5 -4" fill="none" stroke="#000000" stroke-width="1.8"/><path d="M22.5 3 l1.5 -2 M22.5 3 l3 -0.5 M22.5 3 l2.6 1.8" stroke="#000000" stroke-width="1.5" fill="none"/></svg>扫雷</li>
+    </ul>
+    <div class="start-menu-footer">关闭系统…（占位）</div>
+  </nav>
+
+  <script src="data.js?v=23"></script>
+  <script src="photos.js?v=23"></script>
+  <script src="script.js?v=23"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+/* ===== 横向时间轴模式 · 白底网格版（复刻参考图比例，底部六格轴除外） ===== */
+body.hmode{overflow:hidden;width:100vw;height:100dvh;background:#fff;color:#000;--background-color:#fff;--text-color:#000}
+
+/* 横向滚动轨道 */
+#hscroll{position:fixed;inset:0;overflow-x:auto;overflow-y:hidden;z-index:60;scrollbar-width:none;-ms-overflow-style:none}
+#hscroll::-webkit-scrollbar{display:none}
+body.hmode #scroll-dist{height:100%;width:800vw;pointer-events:auto}
+body.hmode #container{pointer-events:none}
+body.hmode canvas{transform:none !important}
+
+/* 外框细线 */
+.h-frame{position:fixed;inset:7px;border:1px solid #ccc;z-index:104;pointer-events:none}
+
+/* 顶部栏 */
+.h-top{position:fixed;top:7px;left:7px;right:7px;height:48px;z-index:120;display:flex;align-items:center;justify-content:space-between;padding:0 1.6rem;border-bottom:1px solid #ccc;font-family:"Pantasia Regular",monospace;letter-spacing:.18em;font-size:.95rem;background:transparent}
+.h-brand{font-weight:bold}
+.h-title{position:absolute;left:50%;transform:translateX(-50%);opacity:.9}
+.h-back{color:#000;text-decoration:none;opacity:.7}
+.h-back:hover{opacity:1}
+
+/* 信息副栏 */
+.h-subrow{position:fixed;top:55px;left:7px;right:7px;height:34px;z-index:120;display:flex;align-items:center;justify-content:space-between;padding:0 1.6rem;border-bottom:1px solid #ccc;font-family:"Pantasia Regular",monospace;font-size:.82rem;letter-spacing:.2em}
+.h-sub-left{opacity:.85}
+.h-sub-right{opacity:.45;font-size:.75rem}
+
+/* 左栏：阶段语境（参考图宽约 24%） */
+.h-left{position:fixed;top:89px;left:7px;bottom:7px;width:24vw;padding:2.2rem 1.8rem;border-right:1px solid #ccc;z-index:110;font-family:SimHei,"Microsoft YaHei","Heiti SC",sans-serif}
+.h-stage-cn{font-size:2.4rem;letter-spacing:.3em;margin-bottom:1.6rem;font-weight:bold}
+.h-stage-q{font-size:.92rem;line-height:1.9;opacity:.78;margin-bottom:1.6rem}
+.h-stage-bullet{font-family:"Pantasia Regular",monospace;font-size:.85rem;letter-spacing:.18em;opacity:.85;margin-bottom:1.2rem}
+.h-stage-count{font-family:"Pantasia Regular",monospace;font-size:.78rem;letter-spacing:.15em;opacity:.45}
+
+/* 右栏：条目信息（参考图宽约 25%） */
+.h-right{position:fixed;top:89px;right:7px;bottom:7px;width:25vw;padding:2.2rem 1.8rem;border-left:1px solid #ccc;z-index:110;font-family:SimHei,"Microsoft YaHei","Heiti SC",sans-serif}
+.h-kicker{font-family:"Pantasia Regular",monospace;font-size:.85rem;letter-spacing:.22em;opacity:.6;margin-bottom:1rem}
+.h-entry-title{font-size:1.25rem;line-height:1.5;margin-bottom:.6rem;font-weight:bold}
+.h-entry-year{font-family:"Pantasia Regular",monospace;font-size:.9rem;letter-spacing:.18em;opacity:.6;margin-bottom:1rem}
+.h-entry-note{font-size:.88rem;line-height:1.85;opacity:.8;margin-bottom:1.2rem}
+.h-entry-tags{display:flex;flex-wrap:wrap;gap:.4rem}
+.h-entry-tags span{font-family:"Pantasia Regular",monospace;font-size:.78rem;letter-spacing:.12em;border:1px solid #999;padding:.25rem .7rem;opacity:.85}
+
+/* 底部顺序轴：与首页下方六格对应的整宽底栏 */
+.h-seq{position:fixed;left:0;right:0;bottom:0;z-index:110;display:grid;grid-template-columns:76px 1fr 76px;border-top:2px solid #000;background:#fff}
+.h-seq-items{display:grid;grid-template-columns:repeat(6,1fr)}
+.h-seq-item{display:flex;flex-direction:column;align-items:flex-start;gap:3px;background:none;border:none;border-right:1px solid #ddd;color:#000;opacity:.5;cursor:pointer;padding:9px 16px 10px;font-family:"Pantasia Regular",monospace;text-align:left;transition:all .25s}
+.h-seq-item:hover{opacity:.9}
+.h-seq-num{font-size:.72rem;letter-spacing:.22em}
+.h-seq-icon svg{width:30px;height:30px;display:block}
+.h-seq-label{font-size:1.05rem;letter-spacing:.3em;display:flex;align-items:baseline;gap:.55rem;margin-top:1px}
+.h-seq-label small{font-size:.6rem;letter-spacing:.16em;opacity:.65}
+.h-seq-item.active{opacity:1;background:#000;color:#fff}
+.h-seq-item.active .h-seq-label small{opacity:.75}
+.h-seq-arrow{background:none;border:none;color:#000;font-family:"Pantasia Regular",monospace;font-size:1.25rem;cursor:pointer;transition:all .25s}
+.h-seq-arrow:hover{background:#000;color:#fff}
+#h-prev{border-right:1px solid #ddd}
+#h-next{border-left:1px solid #ddd}
+
+/* 照片说明（黑底白字条） */
+.h-caption{position:fixed;left:50%;bottom:13.5vh;transform:translateX(-50%);z-index:110;font-family:SimHei,"Microsoft YaHei","Heiti SC",sans-serif;font-size:.92rem;letter-spacing:.1em;color:#fff;background:#000;padding:.45rem 1.4rem;white-space:nowrap;text-align:center}
+
+@media (max-width:900px){
+  .h-left,.h-right{display:none}
+}

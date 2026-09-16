@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>桌面的一生 · A LIFE OF THE DESK</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel="stylesheet" href="./stage.css">
+<link rel="stylesheet" href="./stage-h.css">
+</head>
+<body class="hmode">
+  <!-- 横向滚动轨道：滚轮纵向输入转为横向滚动 -->
+  <div id="hscroll"><div id="scroll-dist"></div></div>
+
+  <!-- three.js 3D 环形照片轮播 -->
+  <div id="container"></div>
+
+  <!-- 外框细线 -->
+  <div class="h-frame"></div>
+
+  <!-- 顶部栏 -->
+  <header class="h-top">
+    <div class="h-brand">桌面档案</div>
+    <div class="h-title">桌面的一生 / A LIFE OF THE DESK</div>
+    <a class="h-back" href="./index.html">INDEX / 返回档案库</a>
+  </header>
+
+  <!-- 信息副栏：左当前阶段，右操作提示 -->
+  <div class="h-subrow">
+    <div class="h-sub-left" id="h-sub-left">● 01 / BUILD</div>
+    <div class="h-sub-right">滚轮 / 拖动浏览案例</div>
+  </div>
+
+  <!-- 左栏：当前阶段语境 -->
+  <aside class="h-left">
+    <h1 class="h-stage-cn" id="h-stage-cn">建立</h1>
+    <p class="h-stage-q" id="h-stage-q"></p>
+    <div class="h-stage-bullet" id="h-stage-bullet"></div>
+    <div class="h-stage-count" id="h-stage-count"></div>
+  </aside>
+
+  <!-- 右栏：当前条目信息 -->
+  <aside class="h-right">
+    <div class="h-kicker" id="h-entry-no">A001</div>
+    <h2 class="h-entry-title" id="h-entry-title"></h2>
+    <div class="h-entry-year" id="h-entry-year"></div>
+    <p class="h-entry-note" id="h-entry-note"></p>
+    <div class="h-entry-tags" id="h-entry-tags"></div>
+  </aside>
+
+  <!-- 照片说明 -->
+  <div class="h-caption" id="h-caption"></div>
+
+  <!-- 底部顺序轴：六阶段横向排列，滚到哪段哪段亮起 -->
+  <div class="h-seq" id="h-seq">
+    <button class="h-seq-arrow" id="h-prev" aria-label="上一条">←</button>
+    <div class="h-seq-items" id="h-seq-items"></div>
+    <button class="h-seq-arrow" id="h-next" aria-label="下一条">→</button>
+  </div>
+
+  <div class="mobile-screen"><div class="mobile-text">PLEASE VIEW ON A DESKTOP</div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/94/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.3.1/gsap.min.js"></script>
+<script src="./stage-data.js"></script>
+<script src="./stage.js"></script>
+<script src="./stage-3d.js"></script>
+</body>
+</html>

@@ -15,22 +15,28 @@ button{font-family:inherit;cursor:pointer;background:transparent;border:1px soli
 #deck{position:fixed;inset:0;z-index:10;overflow:hidden}
 .card{position:absolute;left:50%;top:40%;width:min(940px,86vw);height:34px;will-change:transform;cursor:pointer}
 .card:hover{z-index:400 !important}
-.pop{position:relative;width:100%;height:100%;background:#fff;border:1.5px solid #000;border-radius:10px;transition:transform .2s ease-out,box-shadow .2s ease-out}
-.card:not(.tab):hover .pop{transform:translateY(-6px) scale(1.035);box-shadow:0 14px 28px rgba(0,0,0,.25)}
-.bump{position:absolute;top:-27px;width:240px;height:30px;background:#fff;border:1.5px solid #000;border-bottom:none;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;gap:26px;font-size:15px;letter-spacing:.04em;white-space:nowrap}
+.pop{position:relative;width:100%;height:100%;background:#fff;border:1.5px solid #000;border-radius:10px;transition:transform .25s ease-out,box-shadow .25s ease-out}
+/* hover: black tab lifts a little; a content card slides all the way up out of the stack, revealing its full body */
+.card.tab:hover .pop{transform:translateY(-30px);box-shadow:0 14px 28px rgba(0,0,0,.25)}
+.card:not(.tab):hover .pop{transform:translateY(-274px);box-shadow:0 18px 34px rgba(0,0,0,.28)}
+/* card body: hidden inside the stack, shown only while the card is lifted on hover */
+.body{display:none;position:absolute;top:calc(100% - 1.5px);left:-1.5px;right:-1.5px;height:264px;background:#fff;border:1.5px solid #000;border-top:none;border-radius:0 0 10px 10px;padding:20px 24px}
+.card:not(.tab):hover .body{display:block}
+.body .b-title{font-size:16px;letter-spacing:.05em}
+.body .b-sub{font-size:12px;opacity:.55;margin-top:6px}
+.body .b-img{display:block;max-width:44%;max-height:148px;margin:14px auto 0}
+/* index bumps: all trapezoid, no rounded corners (outline = black outer clip, inner white fill) */
+.bump{position:absolute;top:-27px;width:240px;height:30px;background:#000;border:none;border-radius:0;clip-path:polygon(7% 0,93% 0,100% 100%,0 100%);display:flex;align-items:center;justify-content:center;gap:26px;font-size:15px;letter-spacing:.04em;white-space:nowrap}
+.bump::before{content:'';position:absolute;inset:2px 2px 0;background:#fff;clip-path:polygon(7% 0,93% 0,100% 100%,0 100%)}
+.bump>*{position:relative}
 .bump.l{left:15%}
 .bump.r{left:53%}
-.bump.black{background:#000;color:#fff;border:none;border-radius:0;clip-path:polygon(7% 0,93% 0,100% 100%,0 100%);width:220px}
+.bump.black{color:#fff}
+.bump.black::before{display:none}
 .bump .no{display:inline-block;min-width:34px;text-align:right}
 
-/* ---- detail card (text only, no images) ---- */
-#detail{position:fixed;left:50%;top:44%;width:min(620px,72vw);height:min(420px,54vh);transform:translateX(-50%) translateY(220%);background:#fff;border:1.5px solid #000;border-radius:14px;z-index:60;will-change:transform}
-#detail .d-head{padding:18px 22px 0}
-#detail .d-title{font-size:15px;letter-spacing:.05em}
-#detail .d-sub{font-size:12px;opacity:.55;margin-top:5px}
-
-/* ---- bottom: inverted-trapezoid drawer edge with rim thickness ---- */
-#box{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);width:min(980px,96vw);height:250px;z-index:50;pointer-events:none}
+/* ---- bottom: inverted-trapezoid drawer edge, square corners, wider than the cards ---- */
+#box{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);width:min(1080px,94vw);height:250px;z-index:50;pointer-events:none}
 #box svg{display:block;width:100%;height:100%}
 #label{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);z-index:60;background:#f5e050;border:1.5px solid #000;border-radius:5px;padding:5px 20px;font-size:13px;letter-spacing:.05em;pointer-events:none}
 </style>
@@ -38,11 +44,10 @@ button{font-family:inherit;cursor:pointer;background:transparent;border:1px soli
 <body>
 <button id="back" title="返回">← INDEX</button>
 <div id="deck"></div>
-<div id="detail"><div class="d-head"><div class="d-title" id="d-title"></div><div class="d-sub" id="d-sub">details</div></div></div>
 <div id="box">
  <svg viewBox="0 0 980 250" preserveAspectRatio="none">
-  <!-- rim: two lines showing edge thickness -->
-  <rect x="14" y="8" width="952" height="20" rx="10" fill="#f0eef0" stroke="#000" stroke-width="1.5"/>
+  <!-- rim: square-cornered edge bar -->
+  <rect x="14" y="8" width="952" height="20" fill="#f0eef0" stroke="#000" stroke-width="1.5"/>
   <!-- inverted trapezoid drawer edge -->
   <path d="M26 28 L130 236 L850 236 L954 28" fill="#eae8ea" stroke="#000" stroke-width="1.5"/>
  </svg>
