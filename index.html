@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#000000">
+<title>Desk Archive</title><meta name="description" content="A curated collection of objects from a pixel desk. Drag to rotate the 3D scene and scroll to zoom.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000'/%3E%3Cpath d='M12 22h40v8H12zm5 10h6v19h-6zm18 0h6v19h-6z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#fff;color:#000;font-family:'Courier New',monospace}
+button{font-family:inherit;cursor:pointer;background:#fff;border:2px solid #000}
+.px{font-family:'VT323','Courier New',monospace}
+#layout{display:grid;height:100vh;grid-template-rows:48px 1fr 108px;grid-template-columns:300px 1fr 330px;grid-template-areas:"top top top" "left stage right" "car car car"}
+
+/* ---- top bar ---- */
+#topbar{grid-area:top;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:2px solid #000;background:#fff}
+.brand{display:flex;align-items:center;gap:10px;font-size:26px;letter-spacing:.06em}
+.brand svg{display:block}
+#topbar nav{display:flex;align-items:center;gap:6px;font-size:20px;letter-spacing:.08em}
+#topbar nav a{color:#000;text-decoration:none;padding:2px 4px}
+#topbar nav a:hover{background:#000;color:#fff}
+#topbar nav .sep{opacity:.4}
+#sound-btn{border:none;padding:2px 4px 0}
+#view-toggle{position:absolute;top:14px;right:16px;z-index:30;display:flex;border:2px solid #000;border-radius:999px;overflow:hidden}
+#view-toggle button{border:none;background:#fff;color:#000;font-family:'VT323','Courier New',monospace;font-size:16px;letter-spacing:.1em;padding:2px 14px;cursor:pointer}
+#view-toggle button.on{background:#000;color:#fff}
+
+/* ---- side panels ---- */
+aside{background:#fff;overflow-y:auto}
+#left{grid-area:left;border-right:2px solid #000;padding:22px 20px}
+#left h1{font-family:'VT323','Courier New',monospace;font-size:44px;line-height:.95;margin:0 0 18px;letter-spacing:.02em}
+#left .intro{font-size:12px;line-height:1.7;margin:0 0 22px}
+#left h2{font-family:'VT323','Courier New',monospace;font-size:20px;letter-spacing:.15em;border-top:2px solid #000;padding-top:14px;margin:0 0 10px}
+#left ul{list-style:none;margin:0;padding:0}
+#left li{display:flex;align-items:center;gap:8px;padding:9px 2px;font-size:11px;letter-spacing:.02em;white-space:nowrap}
+#left li small{margin-left:auto;opacity:.55}
+#left li svg{flex:none}
+#left li .cn{font-family:SimHei,'Microsoft YaHei',sans-serif;letter-spacing:0}
+#left li .sep{opacity:.35}
+#left h2 .cn{font-family:SimHei,'Microsoft YaHei',sans-serif;font-size:15px;letter-spacing:.2em;opacity:.7}
+
+/* ---- center stage ---- */
+#stage{grid-area:stage;position:relative;background:#000;overflow:hidden}
+#app{position:absolute;inset:0}
+canvas{display:block;touch-action:none;image-rendering:pixelated}
+.stage-label{position:absolute;font-family:'VT323','Courier New',monospace;font-size:18px;letter-spacing:.15em;color:#fff;mix-blend-mode:difference;pointer-events:none;display:flex;align-items:center;gap:8px}
+.stage-label.tl{top:14px;left:16px}
+.stage-label.tr{top:14px;right:196px}
+.stage-tools{position:absolute;right:14px;bottom:14px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.stage-tools .zoom{display:flex;flex-direction:column}
+.stage-tools .zoom button{width:34px;height:34px;font-size:22px;line-height:1;background:#fff;border:2px solid #000}
+.stage-tools .zoom button+button{border-top:none}
+.stage-tools .zoom button:hover,#reset-view:hover{background:#000;color:#fff}
+#reset-view{font-family:'VT323','Courier New',monospace;font-size:16px;letter-spacing:.12em;padding:6px 10px;display:flex;align-items:center;gap:6px}
+#status{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:20px;background:#000;color:#fff;font-size:14px;line-height:1.8;max-width:90vw;text-align:center}
+#status[hidden]{display:none}
+#list-view{position:absolute;inset:0;background:#fff;z-index:20;display:none;overflow-y:auto;overflow-x:hidden;padding:26px 34px 60px}
+#stage.list-mode #list-view{display:block}
+.lv-head h2{font-family:'VT323','Courier New',monospace;font-size:42px;margin:0;letter-spacing:.04em;line-height:1}
+.lv-head .lv-sub{font-family:SimHei,'Microsoft YaHei',sans-serif;font-size:12px;line-height:1.8;max-width:560px;margin:12px 0 30px}
+.lv-cols,.lv-row{display:grid;grid-template-columns:110px 1fr 150px;gap:14px;align-items:baseline}
+.lv-cols{font-family:'VT323','Courier New',monospace;font-size:15px;letter-spacing:.18em;opacity:.55;border-bottom:2px solid #000;padding:0 8px 6px}
+.lv-sec{font-family:'VT323','Courier New',monospace;font-size:22px;letter-spacing:.12em;margin:28px 0 0;padding:6px 8px;border-bottom:2px solid #000;display:flex;align-items:baseline;gap:12px}
+.lv-sec .cn{font-family:SimHei,'Microsoft YaHei',sans-serif;font-size:15px;letter-spacing:.1em}
+.lv-sec .cnt{margin-left:auto;font-size:16px;opacity:.55}
+.lv-row{padding:8px;border-bottom:1px solid #000;font-size:13px;cursor:pointer}
+.lv-row:hover{background:#000;color:#fff}
+.lv-row .lid{font-family:'VT323','Courier New',monospace;font-size:17px;letter-spacing:.08em}
+.lv-row .ltitle{font-family:SimHei,'Microsoft YaHei',sans-serif;letter-spacing:.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lv-row .lfield{font-family:SimHei,'Microsoft YaHei',sans-serif;font-size:11px;opacity:.65;text-align:right;letter-spacing:.04em}
+#retry{display:block;margin:12px auto 0;padding:8px 18px;border:2px solid #fff;background:transparent;color:#fff}
+
+/* ---- right object index ---- */
+#right{grid-area:right;border-left:2px solid #000;padding:18px 20px;display:flex;flex-direction:column}
+.panel-head{font-family:'VT323','Courier New',monospace;font-size:20px;letter-spacing:.15em;margin-bottom:14px}
+#obj-preview{border:2px solid #000;padding:18px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+#obj-preview svg{width:96px;height:96px}
+#obj-name{font-family:'SimHei','Microsoft YaHei','Heiti SC',sans-serif;font-size:28px;font-weight:bold;margin:0 0 10px;letter-spacing:.04em}
+#obj-desc{font-family:'SimHei','Microsoft YaHei','Heiti SC',sans-serif;font-size:12px;line-height:1.7;margin:0 0 18px;white-space:pre-line}
+#obj-meta{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:18px}
+#obj-meta td{padding:7px 2px;border-top:1px solid #000;vertical-align:top;letter-spacing:.06em}
+#obj-meta td:first-child{font-family:'VT323','Courier New',monospace;font-size:15px;width:88px;letter-spacing:.12em}
+#obj-meta td:last-child{font-family:'SimHei','Microsoft YaHei','Heiti SC',sans-serif}
+#open-archive{margin-top:auto;font-family:'VT323','Courier New',monospace;font-size:22px;letter-spacing:.15em;padding:10px;display:flex;justify-content:space-between;align-items:center}
+#open-archive:hover{background:#000;color:#fff}
+
+/* ---- bottom carousel ---- */
+#carousel{grid-area:car;display:grid;grid-template-columns:repeat(6,1fr);border-top:2px solid #000;background:#fff}
+.cell{border:none;border-right:2px solid #000;padding:10px 12px 8px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:#fff;color:#000}
+.cell:last-child{border-right:none}
+.cell .num{font-family:'VT323','Courier New',monospace;font-size:15px;opacity:.6}
+.cell svg{width:44px;height:44px}
+.cell .label{font-family:'VT323','Courier New',monospace;font-size:17px;letter-spacing:.18em;border-top:2px solid currentColor;padding-top:3px;width:100%}
+.cell:hover{background:#000;color:#fff}
+.cell.selected,.cell.selected:hover{background:#3d7bff;color:#fff}
+.cell.selected .num{opacity:.85}
+
+@media(max-width:960px){
+ #layout{grid-template-columns:0 1fr 0}
+ aside{display:none}
+ #carousel{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ---- archive overlay (object sub-page) ---- */
+#archive{position:fixed;inset:0;background:#fff;z-index:50;display:flex;flex-direction:column}
+#archive[hidden]{display:none}
+.arc-head{display:flex;align-items:center;gap:16px;padding:0 20px;height:56px;border-bottom:2px solid #000;font-size:26px;letter-spacing:.08em}
+.arc-head .arc-theme{font-size:16px;opacity:.55;letter-spacing:.15em}
+.arc-count{margin-left:auto;font-size:16px;opacity:.6}
+#arc-close{border:none;font-size:24px;padding:4px 12px}
+#arc-close:hover{background:#000;color:#fff}
+.arc-body{flex:1;display:grid;grid-template-columns:minmax(340px,44%) 1fr;min-height:0}
+#arc-list{list-style:none;margin:0;padding:0;overflow-y:auto;border-right:2px solid #000}
+#arc-list li{display:flex;gap:12px;padding:10px 16px;border-bottom:1px solid #000;cursor:pointer;font-size:12px;align-items:baseline;font-family:'SimHei','Microsoft YaHei','Heiti SC',sans-serif}
+#arc-list li .n{font-family:'VT323','Courier New',monospace;font-size:15px;opacity:.55;flex:none}
+#arc-list li .t{flex:1;line-height:1.5}
+#arc-list li .y{font-family:'VT323','Courier New',monospace;font-size:14px;opacity:.6;white-space:nowrap}
+#arc-list li:hover{background:#000;color:#fff}
+#arc-list li.active,#arc-list li.active:hover{background:#3d7bff;color:#fff}
+#arc-detail{padding:26px 30px;overflow-y:auto;font-family:'SimHei','Microsoft YaHei','Heiti SC',sans-serif}
+#arc-d-id{font-family:'VT323','Courier New',monospace;font-size:18px;letter-spacing:.15em;opacity:.55;margin-bottom:10px}
+#arc-d-title{font-size:22px;font-weight:bold;margin:0 0 14px;line-height:1.4}
+#arc-d-meta{font-size:12px;line-height:1.9;margin-bottom:16px}
+#arc-d-meta b{font-family:'VT323','Courier New',monospace;font-weight:normal;font-size:15px;letter-spacing:.12em;display:inline-block;width:88px}
+#arc-d-note{font-size:13px;line-height:1.9;margin:0 0 14px;border-top:2px solid #000;padding-top:14px}
+#arc-d-image{font-size:12px;line-height:1.8;opacity:.6;margin:0}
+@media(max-width:960px){.arc-body{grid-template-columns:1fr}#arc-detail{display:none}}
+
+/* ---- boot loader: retro terminal setup ---- */
+#loader{position:fixed;inset:0;background:#000;color:#fff;z-index:100;font-family:'Courier New',monospace;transition:opacity .5s;overflow-y:auto}
+.loader-inner{max-width:660px;margin:0 auto;padding:52px 24px 90px}
+.loader-head{font-size:30px;letter-spacing:.08em}
+.loader-head span{opacity:.55}
+.loader-sub{font-size:14px;margin-top:10px;letter-spacing:.06em}
+.loader-rule{border-top:2px solid #fff;margin:18px 0 26px}
+.loader-text{font-size:13px;line-height:1.8;margin:0 0 4px}
+.loader-text.dim{opacity:.6;margin-bottom:26px}
+.loader-copy{font-size:14px;margin:0 0 12px;letter-spacing:.04em}
+.bar{border:2px solid #fff;padding:4px;height:26px}
+.bar-fill{height:100%;width:0%;background:repeating-linear-gradient(90deg,#fff 0 9px,rgba(0,0,0,0) 9px 13px)}
+.loader-pct{font-size:15px;margin:8px 0 22px}
+#loader-steps{list-style:none;margin:0;padding:16px 18px;border:2px solid #fff;font-size:13px}
+#loader-steps li{display:flex;align-items:baseline;padding:5px 0;opacity:.45}
+#loader-steps li.active{opacity:1}
+#loader-steps li.done{opacity:1}
+#loader-steps .dots{flex:1;margin:0 10px;border-bottom:2px dotted #555;transform:translateY(-3px)}
+#loader-steps .st{white-space:nowrap}
+#loader-steps li.done .st{color:#fff}
+.loader-foot{position:fixed;left:24px;bottom:20px;font-size:18px;letter-spacing:.06em;color:#fff}
+.loader-foot .cursor{animation:blink 1s steps(1) infinite}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+#loader-error{margin-top:14px;padding:10px 18px;border:2px solid #fff;background:transparent;color:#fff;font-size:14px}
+</style>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+</head><body>
+<div id="layout">
+
+ <header id="topbar">
+  <div class="brand px"><svg width="22" height="22" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M2 6h20v3H2zM4 10h3v10H4zM17 10h3v10h-3zM9 10h6v3H9z" fill="#000"/></svg>DESK ARCHIVE</div>
+  <nav class="px"><a href="#">EXPLORE</a><span class="sep">/</span><a href="#">INDEX</a><span class="sep">/</span><a href="#">ABOUT</a><button id="sound-btn" title="Sound"><svg width="20" height="20" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#000"/><path d="M15 9h2v6h-2zM18 6h2v12h-2z" fill="#000"/></svg></button></nav>
+ </header>
+
+ <aside id="left">
+  <h1>桌面<br>DESK.</h1>
+  <p class="intro">一个关于桌面的档案库：收录艺术、文学、社会现场与器物形式中，那些被桌面承载的关系与生活。<br><br>An archive of the table: the relationships and everyday lives it holds, across art, literature, social documents, and form.</p>
+  <h2>COLLECTIONS <span class="cn">内容分类</span></h2>
+  <ul>
+   <li><svg width="18" height="18" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M3 5h18v3H3zM5 9h14v3H5zM3 13h18v3H3zM5 17h14v3H5z" fill="#000"/></svg><span class="cn">文学意象</span><span class="sep">|</span>LITERARY IMAGERY</li>
+   <li><svg width="18" height="18" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M3 3h18v18H3zM5 5v10l4-4 3 3 3-4 4 5V5z" fill="#000"/></svg><span class="cn">经典艺术档案</span><span class="sep">|</span>CLASSIC ART ARCHIVE</li>
+   <li><svg width="18" height="18" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M3 4h18v12H8l-5 4zM6 7h12v2H6zM6 10h8v2H6z" fill="#000"/></svg><span class="cn">社会素材</span><span class="sep">|</span>SOCIAL MATERIALS</li>
+   <li><svg width="18" height="18" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M9 2h6v2h3v3h2v5h-2v3h-2v3h-4v-3h-2v-3H8V7h2V4h3V2zM10 20h4v2h-4z" fill="#000"/></svg><span class="cn">形式灵感</span><span class="sep">|</span>FORMAL INSPIRATION</li>
+  </ul>
+ </aside>
+
+ <main id="stage">
+  <div id="app"></div>
+  <div id="view-toggle"><button id="vt-desk" class="on">DESK</button><button id="vt-list">LIST</button></div>
+  <div id="list-view"></div>
+  <div class="stage-label tl">DESKTOP / 01</div>
+  <div class="stage-label tr">DRAG TO ROTATE<svg width="18" height="18" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M11 2h2v6h-2zM11 16h2v6h-2zM2 11h6v2H2zM16 11h6v2h-6zM12 8l3 3h-6zM12 16l-3-3h6zM8 12l3-3v6zM16 12l-3 3V9z" fill="#fff"/></svg></div>
+  <div class="stage-tools">
+   <div class="zoom px"><button id="zoom-in" title="Zoom in">+</button><button id="zoom-out" title="Zoom out">−</button></div>
+   <button id="reset-view">RESET VIEW<svg width="14" height="14" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M12 4a8 8 0 1 1-8 8H2a10 10 0 1 0 10-10z" fill="currentColor"/><path d="M4 2v6h6z" fill="currentColor"/></svg></button>
+  </div>
+ </main>
+
+ <aside id="right">
+  <div class="panel-head"><span id="obj-num">01</span> / OBJECT INDEX</div>
+  <div id="obj-preview"></div>
+  <h2 id="obj-name">THE BOOKS</h2>
+  <p id="obj-desc"></p>
+  <table id="obj-meta">
+   <tr><td>TYPE</td><td id="obj-type"></td></tr>
+   <tr><td>MATERIAL</td><td id="obj-material"></td></tr>
+   <tr><td>ADDED</td><td id="obj-added"></td></tr>
+   <tr><td>TAGS</td><td id="obj-tags"></td></tr>
+  </table>
+  <button id="open-archive">OPEN ARCHIVE<span>→</span></button>
+ </aside>
+
+ <footer id="carousel">
+  <button class="cell selected" data-role="book"><span class="num">01</span><svg id="icon-book" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M8 12h24v6H8zM10 20h24v6H10zM8 28h24v6H8zM14 12v6M16 20v6M14 28v6M36 8v30"/></svg><span class="label">BOOKS</span></button>
+  <button class="cell" data-role="phone"><span class="num">02</span><svg id="icon-phone" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M10 8h10l3 8-5 4a22 22 0 0 0 10 10l4-5 8 3v10c0 2-2 4-4 4C20 42 6 28 6 12c0-2 2-4 4-4z"/></svg><span class="label">TELEPHONE</span></button>
+  <button class="cell" data-role="computer"><span class="num">03</span><svg id="icon-computer" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="6" y="8" width="26" height="20"/><path d="M14 34h16M22 28v6M36 14h8v26h-8zM39 20h2M39 34h2"/></svg><span class="label">COMPUTER</span></button>
+  <button class="cell" data-role="note"><span class="num">04</span><svg id="icon-note" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="10" y="8" width="28" height="28"/><path d="M16 16h12M16 22h16M30 30l10 10M34 26l6 6"/></svg><span class="label">NOTES</span></button>
+  <button class="cell" data-role="frame"><span class="num">05</span><svg id="icon-frame" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="8" y="8" width="32" height="32"/><path d="M14 30l7-8 5 6 4-5 6 7v4H14zM18 15h4v4h-4z"/></svg><span class="label">FRAME</span></button>
+  <button class="cell" data-role="lamp"><span class="num">06</span><svg id="icon-lamp" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M14 40h20M24 40V26M24 26L14 12M14 12l8-6 10 8-8 6zM22 12h4"/></svg><span class="label">LAMP</span></button>
+ </footer>
+
+ <div hidden><svg id="icon-greenCabinet" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="12" y="4" width="24" height="40"/><path d="M12 14h24M12 24h24M12 34h24M18 9h12M18 19h12M18 29h12M18 39h12"/></svg></div>
+
+</div>
+<div id="archive" hidden>
+ <div class="arc-head px"><span id="arc-title">书本 BOOKS</span><span class="arc-theme" id="arc-theme">文学与书写</span><span class="arc-count px" id="arc-count"></span><button id="arc-close" title="关闭">✕</button></div>
+ <div class="arc-body">
+  <ul id="arc-list"></ul>
+  <div id="arc-detail">
+   <div id="arc-d-id"></div>
+   <h2 id="arc-d-title"></h2>
+   <div id="arc-d-meta"></div>
+   <p id="arc-d-note"></p>
+   <p id="arc-d-image"></p>
+  </div>
+ </div>
+</div>
+<div id="loader">
+ <div class="loader-inner">
+  <div class="loader-head px">DESK ARCHIVE <span>2026</span></div>
+  <div class="loader-sub">Pixel Workspace Setup</div>
+  <div class="loader-rule"></div>
+  <p class="loader-text">Please wait while setup copies files<br>to the DESK ARCHIVE experience.</p>
+  <p class="loader-text dim">This may take a minute to complete.</p>
+  <div class="loader-copy" id="loader-copy">Setup is copying files...</div>
+  <div class="bar"><div class="bar-fill" id="loader-fill"></div></div>
+  <div class="loader-pct px" id="loader-pct">0%</div>
+  <ul id="loader-steps">
+   <li><span class="name">Indexing 87 meshes</span><span class="dots"></span><span class="st">[ ... ]</span></li>
+   <li><span class="name">Loading palette.map</span><span class="dots"></span><span class="st">[ ... ]</span></li>
+   <li><span class="name">Compiling ink renderer</span><span class="dots"></span><span class="st">[ ... ]</span></li>
+   <li><span class="name">Preloading textures</span><span class="dots"></span><span class="st">[ ... ]</span></li>
+   <li><span class="name">Loading desktop.glb</span><span class="dots"></span><span class="st">[ ... ]</span></li>
+   <li><span class="name">Mounting object index</span><span class="dots"></span><span class="st">[ ... ]</span></li>
+   <li><span class="name">Finalizing experience</span><span class="dots"></span><span class="st">[ ... ]</span></li>
+  </ul>
+ </div>
+ <div class="loader-foot px">preparing... <span class="cursor">▓</span></div>
+</div>
+<script src="./list-data.js"></script>
+<script>
+(function(){
+ var stage=document.getElementById('stage');
+ var vtDesk=document.getElementById('vt-desk'), vtList=document.getElementById('vt-list');
+ vtDesk.addEventListener('click',function(){ stage.classList.remove('list-mode'); vtDesk.classList.add('on'); vtList.classList.remove('on'); });
+ vtList.addEventListener('click',function(){ stage.classList.add('list-mode'); vtList.classList.add('on'); vtDesk.classList.remove('on'); });
+ // render archive index (tomoya-okada style: id / title / field, grouped sections)
+ var groups=window.LIST_DATA||[];
+ var total=groups.reduce(function(n,g){return n+g.items.length;},0);
+ var h='<div class="lv-head"><h2 class="px">INDEX OF ARCHIVE ('+total+')</h2>'+
+  '<div class="lv-sub">桌面档案总索引：四个内容分类下的全部词条。An index of all entries across the four collections of the desk archive.</div></div>'+
+  '<div class="lv-cols"><span>ID</span><span>TITLE</span><span style="text-align:right">FIELD</span></div>';
+ groups.forEach(function(g){
+  h+='<div class="lv-sec"><span>'+g.letter+'</span><span class="cn">'+g.name+'</span><span>'+g.en+'</span><span class="cnt">('+g.items.length+')</span></div>';
+  g.items.forEach(function(it){
+   h+='<div class="lv-row"><span class="lid">'+it.id+'</span><span class="ltitle">'+it.title+'</span><span class="lfield">'+it.field+'</span></div>';
+  });
+ });
+ document.getElementById('list-view').innerHTML=h;
+ // ---- scroll bend: rows arc to the right while scrolling, header stays fixed ----
+ var lv=document.getElementById('list-view');
+ var items=[].slice.call(lv.querySelectorAll('.lv-row,.lv-sec')).map(function(el){
+  return {el:el, mid:el.offsetTop+el.offsetHeight/2, x:0};
+ });
+ var lastTop=lv.scrollTop, velo=0, shift=0, shiftV=0, applied=false, measured=false;
+ function measure(){ for(var k=0;k<items.length;k++){ var e=items[k].el; items[k].mid=e.offsetTop+e.offsetHeight/2; } measured=true; }
+ lv.addEventListener('scroll',function(){
+  var t=lv.scrollTop; velo+=(t-lastTop); lastTop=t;
+ },{passive:true});
+ function lvStep(){
+  var target=Math.max(-140,Math.min(140,velo*2.4));
+  shiftV+=(target-shift)*.18; shiftV*=.78; shift+=shiftV;
+  velo*=.82;
+  if(stage.classList.contains('list-mode')){
+   if(!measured) measure();
+   if(Math.abs(shift)>.3){
+    var st=lv.scrollTop, c=lv.clientHeight/2;
+    for(var i=0;i<items.length;i++){
+     var it=items[i];
+     var dy=(it.mid-st-c)/c;
+     if(dy<-1.2||dy>1.2){ if(it.x){it.el.style.transform='';it.x=0;} continue; }
+     var w=Math.cos(Math.max(-1,Math.min(1,dy))*Math.PI/2);
+     var x=shift*w;
+     it.el.style.transform='translateX('+x.toFixed(1)+'px)'; it.x=x;
+    }
+    applied=true;
+   }else if(applied){
+    for(var j=0;j<items.length;j++){ if(items[j].x){items[j].el.style.transform='';items[j].x=0;} }
+    applied=false;
+   }
+  }else if(applied){
+   for(var j=0;j<items.length;j++){ if(items[j].x){items[j].el.style.transform='';items[j].x=0;} }
+   applied=false;
+  }
+ }
+ function lvTick(){ lvStep(); requestAnimationFrame(lvTick); }
+ lvTick();
+ window.lvDebug={ setVelo:function(v){velo=v;}, getShift:function(){return shift;}, pump:function(n){for(var i=0;i<n;i++)lvStep();} };
+})();
+</script>
+<script src="./archive-books.js"></script>
+<script type="module" src="./desk.js"></script></body></html>

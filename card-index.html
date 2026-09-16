@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#eae8ea">
+<title>Card Index — Desk Archive</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23eae8ea'/%3E%3Cpath d='M12 22h40v8H12zm5 10h6v19h-6zm18 0h6v19h-6z' fill='%23000'/%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#eae8ea;color:#000;font-family:'Courier New',monospace}
+button{font-family:inherit;cursor:pointer;background:transparent;border:1px solid #000}
+
+#back{position:fixed;top:16px;left:18px;z-index:80;font-size:13px;letter-spacing:.1em;padding:4px 10px;opacity:.55}
+#back:hover{background:#000;color:#fff;opacity:1}
+
+/* ---- deck: center-aligned cards, alternating protruding index bumps ---- */
+#deck{position:fixed;inset:0;z-index:10;overflow:hidden}
+.card{position:absolute;left:50%;top:40%;width:min(940px,86vw);height:34px;will-change:transform;cursor:pointer}
+.card:hover{z-index:400 !important}
+.pop{position:relative;width:100%;height:100%;background:#fff;border:1.5px solid #000;border-radius:10px;transition:transform .2s ease-out,box-shadow .2s ease-out}
+.card:not(.tab):hover .pop{transform:translateY(-6px) scale(1.035);box-shadow:0 14px 28px rgba(0,0,0,.25)}
+.bump{position:absolute;top:-27px;width:240px;height:30px;background:#fff;border:1.5px solid #000;border-bottom:none;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;gap:26px;font-size:15px;letter-spacing:.04em;white-space:nowrap}
+.bump.l{left:15%}
+.bump.r{left:53%}
+.bump.black{background:#000;color:#fff;border:none;border-radius:0;clip-path:polygon(7% 0,93% 0,100% 100%,0 100%);width:220px}
+.bump .no{display:inline-block;min-width:34px;text-align:right}
+
+/* ---- detail card (text only, no images) ---- */
+#detail{position:fixed;left:50%;top:44%;width:min(620px,72vw);height:min(420px,54vh);transform:translateX(-50%) translateY(220%);background:#fff;border:1.5px solid #000;border-radius:14px;z-index:60;will-change:transform}
+#detail .d-head{padding:18px 22px 0}
+#detail .d-title{font-size:15px;letter-spacing:.05em}
+#detail .d-sub{font-size:12px;opacity:.55;margin-top:5px}
+
+/* ---- bottom: inverted-trapezoid drawer edge with rim thickness ---- */
+#box{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);width:min(980px,96vw);height:250px;z-index:50;pointer-events:none}
+#box svg{display:block;width:100%;height:100%}
+#label{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);z-index:60;background:#f5e050;border:1.5px solid #000;border-radius:5px;padding:5px 20px;font-size:13px;letter-spacing:.05em;pointer-events:none}
+</style>
+</head>
+<body>
+<button id="back" title="返回">← INDEX</button>
+<div id="deck"></div>
+<div id="detail"><div class="d-head"><div class="d-title" id="d-title"></div><div class="d-sub" id="d-sub">details</div></div></div>
+<div id="box">
+ <svg viewBox="0 0 980 250" preserveAspectRatio="none">
+  <!-- rim: two lines showing edge thickness -->
+  <rect x="14" y="8" width="952" height="20" rx="10" fill="#f0eef0" stroke="#000" stroke-width="1.5"/>
+  <!-- inverted trapezoid drawer edge -->
+  <path d="M26 28 L130 236 L850 236 L954 28" fill="#eae8ea" stroke="#000" stroke-width="1.5"/>
+ </svg>
+</div>
+<div id="label">桌面档案 DESK ARCHIVE</div>
+<script type="module" src="./card-index.js"></script>
+</body></html>
