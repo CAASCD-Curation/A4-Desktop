@@ -38,10 +38,11 @@ function pickColor(role, rgb) {
  if (role === 'cabinet' || role === 'greenCabinet') return max > .72 ? '#ffffff' : dark ? '#505050' : '#ffffff';
  if (role === 'chair') return dark ? '#171717' : '#efefef';
  if (role === 'chairFrame') return light > .65 ? '#b0b0b0' : '#161616';
- if (role === 'book' || role === 'frame') return pale ? '#ffffff' : '#353535';
+ if (role === 'book') return pale ? '#ffffff' : '#e6e6e6'; // books stay white; shading comes from light, not black fill
+ if (role === 'frame') return pale ? '#ffffff' : '#353535';
  if (role === 'plant') return rgb[0] > rgb[1] * 1.15 ? '#ffffff' : '#424242';
  if (role === 'lamp') return max > .85 ? '#ffffff' : '#111111';
- if (role === 'phone') return pale ? '#dadada' : '#191919';
+ if (role === 'phone') return pale ? '#ffffff' : '#e6e6e6'; // same white-with-shading treatment as books
  if (role === 'computer') return pale ? '#ffffff' : dark ? '#242424' : '#e0e0e0';
  if (role === 'ivory') return '#ffffff';
  if (role === 'bottle' || role === 'box') return '#b8b8b8';
