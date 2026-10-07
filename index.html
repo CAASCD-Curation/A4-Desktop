@@ -12,7 +12,7 @@ button{font-family:inherit;cursor:pointer;background:#fff;border:2px solid #000}
 #layout{display:grid;height:100vh;grid-template-rows:48px 1fr 108px;grid-template-columns:300px 1fr 330px;grid-template-areas:"top top top" "left stage right" "car car car"}
 
 /* ---- top bar ---- */
-#topbar{grid-area:top;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:2px solid #000;background:#e6120f}
+#topbar{grid-area:top;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:2px solid #000;background:#fff}
 .brand{display:flex;align-items:center;gap:10px;font-size:26px;letter-spacing:.06em}
 .brand svg{display:block}
 #topbar nav{display:flex;align-items:center;gap:6px;font-size:20px;letter-spacing:.08em}
@@ -244,6 +244,7 @@ canvas{display:block;touch-action:none;image-rendering:pixelated}
    <div id="arc-d-id"></div>
    <h2 id="arc-d-title"></h2>
    <div id="arc-d-meta"></div>
+   <img id="arc-d-photo" alt="" style="display:none;max-width:100%;max-height:38vh;object-fit:contain;border:2px solid #000;margin-bottom:14px;background:#fff">
    <p id="arc-d-note"></p>
    <p id="arc-d-image"></p>
   </div>
@@ -326,4 +327,8 @@ canvas{display:block;touch-action:none;image-rendering:pixelated}
 })();
 </script>
 <script src="./archive-books.js"></script>
-<script type="module" src="./desk.js?v=26"></script></body></html>
+<script src="./archive-altar.js?v=3"></script>
+<script src="./archive-dining.js?v=1"></script>
+<script src="./archive-school.js?v=1"></script>
+<script src="./archive-drafting.js?v=1"></script>
+<script type="module" src="./desk.js?v=29"></script></body></html>

@@ -205,7 +205,22 @@ renderer.domElement.addEventListener('pointerleave', () => {
  window.deskDebug = { ...window.deskDebug, hoverRole: null };
 });
 // ---- archive overlay: click an object to open its archive sub-page ----
-const ARCHIVES = { book: { title: '书本 BOOKS', theme: '文学与书写', data: () => window.BOOK_ARCHIVE } };
+const ARCHIVES = {
+ book: { title: '书本 BOOKS', theme: '文学与书写', data: () => window.BOOK_ARCHIVE },
+ candle: { title: '蜡烛 CANDLES', theme: '仪式与供品', data: () => window.ALTAR_CANDLE_ARCHIVE },
+ prayer: { title: '祝辞 PRAYER', theme: '仪式与供品', data: () => window.ALTAR_PRAYER_ARCHIVE },
+ curtain: { title: '帷布 ALTAR CLOTH', theme: '仪式与供品', data: () => window.ALTAR_CURTAIN_ARCHIVE },
+ plate: { title: '盘子 PLATES', theme: '饮食与仪式', data: () => window.DINING_PLATE_ARCHIVE },
+ cutlery: { title: '餐具 CUTLERY', theme: '饮食与仪式', data: () => window.DINING_CUTLERY_ARCHIVE },
+ wineglass: { title: '酒杯 WINE GLASSES', theme: '饮食与仪式', data: () => window.DINING_WINEGLASS_ARCHIVE },
+ textbook: { title: '课本 TEXTBOOKS', theme: '教育与书写', data: () => window.SCHOOL_TEXTBOOK_ARCHIVE },
+ penholder: { title: '笔筒 PEN HOLDER', theme: '教育与书写', data: () => window.SCHOOL_PENHOLDER_ARCHIVE },
+ exampaper: { title: '试卷 EXAM PAPER', theme: '教育与书写', data: () => window.SCHOOL_EXAMPAPER_ARCHIVE },
+ draftpaper: { title: '图纸 DRAWINGS', theme: '工作与工作台', data: () => window.DRAFTING_DRAFTPAPER_ARCHIVE },
+ // 灯也出现在电脑桌场景：档案只在绘图桌视图打开，电脑桌保持原样。
+ lamp: { title: '灯 LAMP', theme: '光与观看', view: 'drafting', data: () => window.DRAFTING_LAMP_ARCHIVE },
+ ruler: { title: '尺子 RULER', theme: '工作与工作台', data: () => window.DRAFTING_RULER_ARCHIVE }
+};
 const archiveEl = document.getElementById('archive');
 const arcList = document.getElementById('arc-list');
 function showArcDetail(entry, idx, total) {
@@ -213,10 +228,17 @@ function showArcDetail(entry, idx, total) {
  document.getElementById('arc-d-title').textContent = entry.title;
  document.getElementById('arc-d-meta').innerHTML = '<b>年代 YEAR</b>' + (entry.year || '—') + '<br><b>标签 TAGS</b>' + entry.tags;
  document.getElementById('arc-d-note').textContent = entry.note;
+ // Entries from the spreadsheet carry a photo (原图 column); show it above
+ // the caption. Older text-only entries keep the plain 图像建议 line.
+ const imgEl = document.getElementById('arc-d-photo');
+ if (entry.img) { imgEl.src = entry.img; imgEl.style.display = 'block'; }
+ else { imgEl.removeAttribute('src'); imgEl.style.display = 'none'; }
  document.getElementById('arc-d-image').textContent = entry.image ? '图像建议：' + entry.image : '';
 }
 function openArchive(role) {
- const a = ARCHIVES[role], data = a && a.data();
+ const a = ARCHIVES[role];
+ if (a && a.view && a.view !== viewMode) return;
+ const data = a && a.data();
  if (!data || !data.length) return;
  document.getElementById('arc-title').textContent = a.title;
  document.getElementById('arc-theme').textContent = a.theme;
