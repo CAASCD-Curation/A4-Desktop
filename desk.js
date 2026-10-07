@@ -79,19 +79,32 @@ key.shadow.normalBias = .035; scene.add(key);
 const fill = new THREE.DirectionalLight('#ffffff', .25); fill.position.set(4, 5, -6); scene.add(fill);
 
 // One accent color for everything interactive, matching the pixel UI.
-const ACCENT = '#3d7bff';
+const ACCENT = '#1693ed';
 const OBJECT_INDEX = {
  book: { num: '01', name: '书本 BOOKS', desc: '文学中的桌面意象，以及关于桌面的语言表达。\nThe desk as it appears in literature, and the language used to describe it.', type: '文学与书写', material: 'Paper', added: '2023-11-14', tags: '文学意象, 书写, 阅读' },
  phone: { num: '02', name: 'TELEPHONE', desc: 'A direct line to the outside world. Mostly rings exactly when an idea starts flowing.', type: 'Physical Object', material: 'Plastic', added: '2024-01-09', tags: 'Communication, Retro' },
  computer: { num: '03', name: 'COMPUTER', desc: 'The engine of the desk. Every experiment, draft and prototype passes through here.', type: 'Physical Object', material: 'Metal, Glass', added: '2023-08-21', tags: 'Work, Code, Design' },
  note: { num: '04', name: 'NOTES', desc: 'Sticky fragments of half-formed plans. Cheap paper, expensive thoughts.', type: 'Physical Object', material: 'Paper', added: '2024-03-02', tags: 'Ideas, Sketches' },
  frame: { num: '05', name: 'FRAME', desc: 'A small window into somewhere else. A reminder that desks sit in rooms, and rooms in the world.', type: 'Physical Object', material: 'Wood, Glass', added: '2023-06-17', tags: 'Memory, Art' },
- lamp: { num: '06', name: 'LAMP', desc: 'Keeps the ideas lit after dark. The last thing switched off at night.', type: 'Physical Object', material: 'Metal', added: '2023-09-30', tags: 'Light, Focus' },
+ lamp: { num: '06', name: '灯 LAMP', desc: '天黑之后点亮灵感：每晚最后熄灭的那盏灯。\nKeeps the ideas lit after dark. The last thing switched off at night.', type: 'Physical Object', material: 'Metal', added: '2023-09-30', tags: 'Light, Focus' },
  greenCabinet: { num: '09', name: '文件柜 CABINET', desc: '归档的秩序：分类、收纳的桌面。\nThe order of archiving: classification, storage, and institutional desks.', type: '归档与秩序', material: '—', added: '—', tags: '归档, 收纳, 制度' },
  dining: { num: '02', name: '餐桌 DINING TABLE', desc: '围坐与共享的平面：一日三餐、节庆、谈判与家庭仪式，都发生在这张桌子上。\nA surface for gathering and sharing — daily meals, feasts, negotiations and family rituals all happen here.', type: '桌面类型学', material: 'Wood, Glass', added: '—', tags: '聚餐, 仪式, 共享' },
  drafting: { num: '04', name: '绘图桌 DRAWING TABLE', desc: '倾斜的平面：线条、比例与想象在这里落成图纸。\nA tilted surface where lines, proportions and imagination become drawings.', type: '桌面类型学', material: 'Wood, Metal', added: '—', tags: '绘图, 设计, 工作' },
  school: { num: '03', name: '课桌 SCHOOL DESK', desc: '规训与求知的平面：一代人的晨读、考试与课间的刻痕。\nA surface of discipline and learning — morning readings, exams, and carvings between classes.', type: '桌面类型学', material: 'Wood, Metal', added: '—', tags: '教育, 规训, 记忆' },
- altar: { num: '01', name: '祭坛 ALTAR', desc: '献祭与通灵的平面：火、供品与祈祷在此抵达另一重世界。\nA surface of sacrifice and communion — fire, offerings and prayers reaching another world.', type: '桌面类型学', material: 'Stone, Wood', added: '—', tags: '仪式, 信仰, 献祭' }
+ altar: { num: '01', name: '祭坛 ALTAR', desc: '献祭与通灵的平面：火、供品与祈祷在此抵达另一重世界。\nA surface of sacrifice and communion — fire, offerings and prayers reaching another world.', type: '桌面类型学', material: 'Stone, Wood', added: '—', tags: '仪式, 信仰, 献祭' },
+ candle: { num: '07', name: '蜡烛 CANDLES', desc: '祭坛上的火：光是第一份抵达另一重世界的供品。\nFire on the altar: light is the first offering to reach the other world.', type: '仪式与供品', material: 'Wax', added: '—', tags: '火, 光, 供奉' },
+ prayer: { num: '08', name: '祝辞 PRAYER', desc: '摊开的书页写着送往他处的文字：祈祷是被朗读的地址。\nAn open book of words sent elsewhere: a prayer is an address read aloud.', type: '仪式与供品', material: 'Paper', added: '—', tags: '祈祷, 文字, 祝辞' },
+ curtain: { num: '10', name: '帷布 ALTAR CLOTH', desc: '覆盖祭坛的布：划分神圣与日常的边界。\nThe cloth over the altar: a border between the sacred and the everyday.', type: '仪式与供品', material: 'Cloth', added: '—', tags: '帷布, 覆盖, 圣域' },
+ stationery: { num: '11', name: '文具 STATIONERY', desc: '铅笔与钢笔：一代人写下的第一行字。\nPencils and pens: the first line a generation ever wrote.', type: '教育与书写', material: 'Wood, Metal', added: '—', tags: '书写, 学习, 工具' },
+ penholder: { num: '12', name: '笔筒 PEN HOLDER', desc: '铅笔与橡皮的营地：课桌上最拥挤的角落。\nA camp for pencils and erasers: the most crowded corner of a school desk.', type: '教育与书写', material: 'Plastic', added: '—', tags: '文具, 收纳, 课间' },
+ exampaper: { num: '15', name: '试卷 EXAM PAPER', desc: '被打分的平面：一代人的紧张都印在折叠的纸上。\nThe graded surface: a generation’s nerves printed on folded sheets.', type: '教育与书写', material: 'Paper', added: '—', tags: '考试, 规训, 分数' },
+ textbook: { num: '16', name: '课本 TEXTBOOKS', desc: '被翻旧的标准答案：知识按学期切分。\nWell-worn standard answers: knowledge sliced by semester.', type: '教育与书写', material: 'Paper', added: '—', tags: '教材, 学习, 记忆' },
+ ruler: { num: '17', name: '尺子 RULER', desc: '图板上唯一的直线：所有倾斜都从它开始。\nThe only straight line on the board: every tilt begins with it.', type: '工作与工作台', material: 'Wood', added: '—', tags: '测量, 直线, 工具' },
+ stool: { num: '13', name: '凳子 STOOL', desc: '绘图者的座位：高度决定视线的角度。\nThe drafter’s seat: height sets the angle of looking.', type: '工作与工作台', material: 'Wood, Metal', added: '—', tags: '坐具, 工作, 姿势' },
+ draftpaper: { num: '14', name: '图纸 DRAWINGS', desc: '摊开的图纸：尚未建成的世界。\nSheets spread out: worlds not yet built.', type: '工作与工作台', material: 'Paper', added: '—', tags: '绘图, 设计, 纸' },
+ plate: { num: '18', name: '盘子 PLATES', desc: '每人面前的圆：盛宴被切分成均等的一份。\nA circle before each seat: the feast divided into equal portions.', type: '饮食与仪式', material: 'Ceramic', added: '—', tags: '餐具, 圆, 盛放' },
+ cutlery: { num: '19', name: '餐具 CUTLERY', desc: '刀叉的顺序就是餐桌的礼仪：谁先动手，谁后动手。\nThe order of knife and fork is table manners itself: who starts, who waits.', type: '饮食与仪式', material: 'Metal', added: '—', tags: '刀叉, 礼仪, 秩序' },
+ wineglass: { num: '20', name: '酒杯 WINE GLASSES', desc: '举起的瞬间，桌面变成仪式：碰杯是最短的祝辞。\nThe moment it is raised, the table becomes a ritual: a toast is the shortest prayer.', type: '饮食与仪式', material: 'Glass', added: '—', tags: '碰杯, 仪式, 欢庆' }
 };
 
 const meshGroup = new Map();
@@ -287,6 +300,47 @@ window.deskHoverPoints = role => {
  return pts;
 };
 window.deskSelect = select;
+// Debug hook: meshes of a hover role with their ancestor chain and world
+// size — used to split mis-grouped objects (e.g. the ruler on the drafting
+// desk was lumped in with the drawings).
+window.deskRoleMeshes = role => [...meshGroup].filter(([m, g]) => g.role === role).map(([m]) => {
+ const b = new THREE.Box3().setFromObject(m), s = b.getSize(new THREE.Vector3());
+ const chain = [];
+ for (let n = m; n && n !== scene; n = n.parent) chain.push(n.name);
+ return { chain: chain.join(' < '), size: [+s.x.toFixed(2), +s.y.toFixed(2), +s.z.toFixed(2)] };
+});
+// Debug hook: every mesh in the current view with its ancestor chain, world
+// size and projected screen center — used to identify unlabeled objects
+// (e.g. the drafting-desk lamp) from a screenshot.
+window.deskSceneMeshes = () => {
+ const rect = renderer.domElement.getBoundingClientRect(), out = [];
+ model.traverse(m => {
+  if (!m.isMesh) return;
+  const b = new THREE.Box3().setFromObject(m), s = b.getSize(new THREE.Vector3());
+  const p = b.getCenter(new THREE.Vector3()).project(camera);
+  const chain = [];
+  for (let n = m; n && n !== scene; n = n.parent) chain.push(n.name);
+  out.push({
+   chain: chain.join(' < '), size: [+s.x.toFixed(2), +s.y.toFixed(2), +s.z.toFixed(2)],
+   x: Math.round((p.x + 1) / 2 * rect.width + rect.left), y: Math.round((1 - p.y) / 2 * rect.height + rect.top)
+  });
+ });
+ return out;
+};
+// Debug hook: render only meshes whose ancestor chain contains the substring
+// (visual identification of a single object against a user screenshot).
+window.deskIsolate = sub => {
+ let shown = 0;
+ model.traverse(m => {
+  if (!m.isMesh) return;
+  const chain = [];
+  for (let n = m; n && n !== scene; n = n.parent) chain.push(n.name);
+  const hit = chain.join(' < ').toLowerCase().includes(String(sub).toLowerCase());
+  m.visible = hit; if (hit) shown++;
+ });
+ return shown;
+};
+window.deskShowAll = () => { model.traverse(m => { if (m.isMesh) m.visible = true; }); };
 function frameModel() {
  // Force-refresh world matrices: freshly added view wrappers can carry stale
  // matrices at framing time, which inflates the measured bounds and pushes
@@ -456,6 +510,39 @@ function recolorGrayscale(root) {
   node.material = cache.get(source);
  });
 }
+// Typology object hover: per-view rules match ancestor node names (the same
+// walk-up scheme as palette.classify). Hovering an object on the altar,
+// school desk or drafting desk fills it blue and updates the side panel,
+// exactly like the computer-desk scene. Meshes that match nothing (the table
+// bodies themselves) get no group, so the raycast passes through them.
+const VIEW_RULES = {
+ altar: [[/candle|flame/i, 'candle'], [/bookopen/i, 'prayer'], [/simply_cloth/i, 'curtain']],
+ school: [[/book/i, 'textbook'], [/paper_file/i, 'exampaper'], [/pen|pencil/i, 'stationery'], [/empty_cup/i, 'penholder']],
+ drafting: [[/tonone|defintion/i, 'lamp'], [/^object_2$/i, 'ruler'], [/stool/i, 'stool'], [/object_\d/i, 'draftpaper']],
+ dining: [[/^box00[6-9]/i, 'plate'], [/对象02[12]|对象03[4-9]/, 'cutlery'], [/cylinder|对象0(?:02|52|53|55)/i, 'wineglass']]
+};
+function classifyView(node, root, rules) {
+ for (let n = node; n && n !== root; n = n.parent) {
+  const name = n.name || '';
+  for (const [re, role] of rules) if (re.test(name)) return { role, node: n };
+ }
+ return null;
+}
+function buildViewHoverGroups(view) {
+ const rules = VIEW_RULES[view];
+ if (!rules) return;
+ const groups = new Map();
+ model.traverse(node => {
+  if (!node.isMesh) return;
+  const hit = classifyView(node, model, rules);
+  if (!hit) return;
+  let group = groups.get(hit.node);
+  if (!group) { group = { role: hit.role, meshes: [] }; groups.set(hit.node, group); }
+  group.meshes.push(node);
+ });
+ for (const group of groups.values()) group.meshes.forEach(mesh => meshGroup.set(mesh, group));
+ window.deskDebug = { ...window.deskDebug, viewRoles: [...new Set([...groups.values()].map(g => g.role))] };
+}
 function viewLoading(text) {
  let el = document.getElementById('view-loading');
  if (!el) {
@@ -500,7 +587,7 @@ function setView(mode) {
  hoverGroup = null; selectedRole = null;
  renderer.domElement.style.cursor = '';
  meshGroup.clear();
- if (isDesk) buildHoverGroups(); // typology models are purely visual: no hover, no click
+ if (isDesk) buildHoverGroups(); else buildViewHoverGroups(mode);
  refreshHighlight();
  for (const cell of document.querySelectorAll('#carousel .cell')) cell.classList.toggle('selected', cell.dataset.view === mode);
  if (isDesk) { frameDesk(); showPanel('book'); }

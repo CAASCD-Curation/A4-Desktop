@@ -12,7 +12,7 @@ button{font-family:inherit;cursor:pointer;background:#fff;border:2px solid #000}
 #layout{display:grid;height:100vh;grid-template-rows:48px 1fr 108px;grid-template-columns:300px 1fr 330px;grid-template-areas:"top top top" "left stage right" "car car car"}
 
 /* ---- top bar ---- */
-#topbar{grid-area:top;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:2px solid #000;background:#fff}
+#topbar{grid-area:top;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:2px solid #000;background:#e6120f}
 .brand{display:flex;align-items:center;gap:10px;font-size:26px;letter-spacing:.06em}
 .brand svg{display:block}
 #topbar nav{display:flex;align-items:center;gap:6px;font-size:20px;letter-spacing:.08em}
@@ -96,7 +96,7 @@ canvas{display:block;touch-action:none;image-rendering:pixelated}
 .cell:hover{background:#000;color:#fff}
 .cell.arrow{align-items:center;justify-content:center;padding:0;font-size:26px}
 .cell .label small{font-size:10px;letter-spacing:.16em;opacity:.6;margin-left:8px}
-.cell.selected,.cell.selected:hover{background:#3d7bff;color:#fff}
+.cell.selected,.cell.selected:hover{background:#1693ed;color:#fff}
 .cell.selected .num{opacity:.85}
 
 @media(max-width:960px){
@@ -120,7 +120,7 @@ canvas{display:block;touch-action:none;image-rendering:pixelated}
 #arc-list li .t{flex:1;line-height:1.5}
 #arc-list li .y{font-family:'VT323','Courier New',monospace;font-size:14px;opacity:.6;white-space:nowrap}
 #arc-list li:hover{background:#000;color:#fff}
-#arc-list li.active,#arc-list li.active:hover{background:#3d7bff;color:#fff}
+#arc-list li.active,#arc-list li.active:hover{background:#1693ed;color:#fff}
 #arc-detail{padding:26px 30px;overflow-y:auto;font-family:'SimHei','Microsoft YaHei','Heiti SC',sans-serif}
 #arc-d-id{font-family:'VT323','Courier New',monospace;font-size:18px;letter-spacing:.15em;opacity:.55;margin-bottom:10px}
 #arc-d-title{font-size:22px;font-weight:bold;margin:0 0 14px;line-height:1.4}
@@ -220,6 +220,19 @@ canvas{display:block;touch-action:none;image-rendering:pixelated}
   <svg id="icon-frame" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="8" y="8" width="32" height="32"/><path d="M14 30l7-8 5 6 4-5 6 7v4H14zM18 15h4v4h-4z"/></svg>
   <svg id="icon-lamp" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M14 40h20M24 40V26M24 26L14 12M14 12l8-6 10 8-8 6zM22 12h4"/></svg>
   <svg id="icon-greenCabinet" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="12" y="4" width="24" height="40"/><path d="M12 14h24M12 24h24M12 34h24M18 9h12M18 19h12M18 29h12M18 39h12"/></svg>
+  <svg id="icon-candle" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M22 8l2-4 2 4v4h-4zM20 14h8v24h-8zM16 38h16v4H16z"/></svg>
+  <svg id="icon-prayer" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M8 12q8-4 16 0 8-4 16 0v26q-8-4-16 0-8-4-16 0zM24 12v26"/></svg>
+  <svg id="icon-curtain" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M8 8h32v6H8zM10 14v20l4 4 4-4 4 4 4-4 4 4 4-4 4 4 4-4V14"/></svg>
+  <svg id="icon-stationery" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M10 38l4-10 20-20 6 6-20 20zM32 10l6 6M14 32l-4-4 2 8z"/></svg>
+  <svg id="icon-penholder" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M18 8v14M24 5v17M30 10v12"/><path d="M14 22h20v14a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4z"/></svg>
+  <svg id="icon-exampaper" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M10 8h28v32H10zM16 16h16M16 21h16M16 26h10M28 32l3 3 6-6"/></svg>
+  <svg id="icon-textbook" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M12 6h24v30H12zM16 12h16M16 17h16M16 22h10M10 36h28v6H10z"/></svg>
+  <svg id="icon-ruler" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M6 26l20-20 8 8-20 20zM12 24l3 3M17 19l3 3M22 14l3 3M27 9l3 3"/></svg>
+  <svg id="icon-stool" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><rect x="12" y="14" width="24" height="5"/><path d="M16 19l-4 22M32 19l4 22M14 30h20"/></svg>
+  <svg id="icon-draftpaper" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M10 8h20l8 8v24H10zM30 8v8h8M16 24h16M16 30h12"/></svg>
+  <svg id="icon-plate" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><circle cx="24" cy="24" r="17"/><circle cx="24" cy="24" r="9"/></svg>
+  <svg id="icon-cutlery" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M12 6v12M17 6v12M22 6v12M12 18h10M17 18v24M34 6v36M34 6l5 5v11l-5 3"/></svg>
+  <svg id="icon-wineglass" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"><path d="M14 6h20v9a10 10 0 0 1-20 0zM24 25v13M16 42h16"/></svg>
  </div>
 
 </div>
@@ -313,4 +326,4 @@ canvas{display:block;touch-action:none;image-rendering:pixelated}
 })();
 </script>
 <script src="./archive-books.js"></script>
-<script type="module" src="./desk.js?v=19"></script></body></html>
+<script type="module" src="./desk.js?v=26"></script></body></html>

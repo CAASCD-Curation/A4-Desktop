@@ -1933,8 +1933,8 @@ a {
 /* ---- stage page: entries & nav ---- */
 .entry-index{list-style:none;margin:0;padding:0}
 .entry-index li{display:flex;gap:.6rem;padding:.28rem 0;border-bottom:1px solid rgba(128,128,128,.25);font-size:.85rem;line-height:1.35;cursor:pointer}
-.entry-index li:hover{color:#7ea4ff}
-.entry-index li.current{color:#3d7bff}
+.entry-index li:hover{color:#1693ed}
+.entry-index li.current{color:#1693ed}
 .entry-index .no{font-family:"Pantasia Regular",monospace;font-size:.8rem;opacity:.55;flex:none}
 .entry-index .ti{flex:1}
 .entry-index .yr{font-size:.75rem;opacity:.55;white-space:nowrap}
@@ -1949,7 +1949,7 @@ a {
   font-family:"Pantasia Regular",monospace;
 }
 .stage-nav a:hover{background:var(--text-color);color:var(--background-color)}
-.stage-nav a.current{background:#3d7bff;border-color:#3d7bff;color:#fff}
+.stage-nav a.current{background:#1693ed;border-color:#1693ed;color:#fff}
 .back-link{display:inline-block;margin-top:1rem;color:var(--text-color);opacity:.7;text-decoration:none;font-size:.85rem;letter-spacing:.15em}
 .back-link:hover{opacity:1}
 .rule-block{font-size:.9rem;line-height:1.7}
