@@ -18,7 +18,7 @@ body {
 }
 
 body {
-  font-family: "MS Sans Serif", "Tahoma", "SimSun", "宋体", monospace;
+  font-family: "MS Sans Serif", "Tahoma", "SimHei", "黑体", monospace;
   font-size: 13px;
   color: #000;
   background: #008080;
@@ -666,7 +666,7 @@ body.pixel-mode * {
 .start-text,
 .tray-clock,
 .ad-titlebar span {
-  font-family: "Press Start 2P", "SimSun", "宋体", monospace;
+  font-family: "Press Start 2P", "SimHei", "黑体", monospace;
 }
 
 .window-titlebar .title-text {
@@ -1277,7 +1277,7 @@ body.pixel-mode * {
   background: #ffffff;
   border: 2px solid;
   border-color: #808080 #ffffff #ffffff #808080;
-  font-family: "Courier New", "SimSun", monospace;
+  font-family: "Courier New", "SimHei", monospace;
   font-size: 12px;
   line-height: 1.5;
   white-space: pre-wrap;
@@ -1916,7 +1916,7 @@ button,
 input,
 textarea,
 pre {
-  font-family: "DotGothic16", "Press Start 2P", "SimSun", "宋体", "Microsoft YaHei", monospace;
+  font-family: "DotGothic16", "Press Start 2P", "SimHei", "黑体", "Microsoft YaHei", monospace;
 }
 
 .font-pixel,
@@ -1924,7 +1924,7 @@ pre {
 .start-text,
 .tray-clock,
 .ad-titlebar span {
-  font-family: "DotGothic16", "Press Start 2P", "SimSun", "宋体", monospace;
+  font-family: "DotGothic16", "Press Start 2P", "SimHei", "黑体", monospace;
 }
 
 /* ---- 窗口：黑色标题栏 + 1px 黑边 + 平灰底 ---- */
@@ -2559,7 +2559,7 @@ body {
   --ht-dense:  radial-gradient(circle, #000 1.5px, transparent 1.9px) 0 0 / 4px 4px;
   /* 45° 排线（等轴测工程图触感） */
   --hatch: repeating-linear-gradient(45deg, #000 0 1px, transparent 1px 7px);
-  --mono: "VT323", "Space Mono", "Courier New", monospace;
+  --mono: "VT323", "Space Mono", "Courier New", "SimHei", "Microsoft YaHei", monospace;
 }
 
 /* ---- 全局：等宽字体 / 纯黑白 / 选区 ---- */
@@ -3925,7 +3925,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 :root {
-  --chicago: "ChicagoFLF", "VT323", "DotGothic16", "Courier New", monospace;
+  --chicago: "ChicagoFLF", "VT323", "DotGothic16", "Courier New", "SimHei", "Microsoft YaHei", monospace;
 }
 
 /* 图标下方标签：白底黑字小标签（Mac 风格），Chicago 字体

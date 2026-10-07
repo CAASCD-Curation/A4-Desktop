@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#000000">
+<title>餐桌 · DINING TABLE — Desk Archive</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000'/%3E%3Cpath d='M12 22h40v8H12zm5 10h6v19h-6zm18 0h6v19h-6z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#fff;color:#000;font-family:'Courier New',SimHei,'Microsoft YaHei',monospace}
+.px{font-family:'VT323','Courier New',monospace}
+#layout{display:grid;height:100vh;grid-template-rows:48px 1fr;grid-template-areas:"top" "stage"}
+
+#topbar{grid-area:top;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #000;padding:0 14px;font-size:20px;letter-spacing:.08em}
+#topbar .brand{display:flex;align-items:center;gap:10px}
+#topbar a{color:#000;text-decoration:none}
+#topbar a:hover{background:#000;color:#fff}
+#topbar .back{display:flex;align-items:center;gap:6px;padding:1px 8px;border:2px solid #000;font-size:16px}
+#topbar .meta{font-size:15px;opacity:.6;letter-spacing:.18em}
+
+#stage{grid-area:stage;position:relative;overflow:hidden;cursor:grab}
+#stage:active{cursor:grabbing}
+#app{position:absolute;inset:0}
+.stage-label{position:absolute;font-family:'VT323','Courier New',monospace;font-size:17px;letter-spacing:.12em;background:#fff;padding:2px 8px;pointer-events:none}
+.stage-label.tl{top:10px;left:12px}
+.stage-label.tr{top:10px;right:12px}
+#reset{position:absolute;right:12px;bottom:12px;font-family:'VT323','Courier New',monospace;font-size:16px;letter-spacing:.12em;padding:6px 14px;border:2px solid #000;background:#fff;cursor:pointer}
+#reset:hover{background:#000;color:#fff}
+
+#loader{position:fixed;inset:0;background:#000;color:#fff;z-index:100;display:flex;align-items:center;justify-content:center;transition:opacity .5s;font-family:'VT323','Courier New',monospace}
+.loader-inner{width:min(420px,80vw)}
+.loader-head{font-size:26px;letter-spacing:.12em;border-bottom:2px solid #fff;padding-bottom:8px;display:flex;justify-content:space-between}
+.loader-head span{opacity:.55;font-size:16px}
+.loader-sub{font-size:14px;letter-spacing:.2em;opacity:.55;margin:10px 0 22px}
+.bar{height:14px;border:2px solid #fff}
+.bar-fill{height:100%;width:0%;background:#fff;transition:width .2s}
+.loader-pct{margin-top:8px;font-size:18px;text-align:right}
+</style>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+</head><body>
+<div id="layout">
+ <header id="topbar">
+  <div class="brand px"><a class="back" href="./index.html">← BACK</a><svg width="22" height="22" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M2 6h20v3H2zM4 10h3v10H4zM17 10h3v10H17zM9 10h6v3H9z" fill="#000"/></svg>DESK ARCHIVE</div>
+  <div class="meta px">TYPOLOGY / 02 · 餐桌 DINING TABLE</div>
+ </header>
+ <main id="stage">
+  <div id="app"></div>
+  <div class="stage-label tl">DINING TABLE / 02</div>
+  <div class="stage-label tr">DRAG TO ROTATE</div>
+  <button id="reset">RESET VIEW ⟳</button>
+ </main>
+</div>
+<div id="loader">
+ <div class="loader-inner">
+  <div class="loader-head">DINING TABLE <span>餐桌</span></div>
+  <div class="loader-sub">LOADING 1-BIT INK MODEL</div>
+  <div class="bar"><div class="bar-fill" id="loader-fill"></div></div>
+  <div class="loader-pct" id="loader-pct">0%</div>
+ </div>
+</div>
+<script type="module" src="./dining.js"></script></body></html>

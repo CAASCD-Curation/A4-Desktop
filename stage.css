@@ -16,6 +16,7 @@ body {
   padding: 0;
   background-color: var(--background-color);
   color: var(--text-color);
+  font-family: SimHei, 'Microsoft YaHei', sans-serif;
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -1719,6 +1720,7 @@ body {
   width: 100vw;
   height: 100dvh;
   background-color: var(--background-color);
+  font-family: SimHei, 'Microsoft YaHei', sans-serif;
   position: relative;
 }
 @media (max-width: 480px) {

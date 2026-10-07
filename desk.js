@@ -60,7 +60,8 @@ function failLoader(error) {
 }
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#000000');
-const camera = new THREE.PerspectiveCamera(34, stage.clientWidth / stage.clientHeight, .05, 100);
+window.deskScene = scene; // debug/inspection hook
+const camera = new THREE.PerspectiveCamera(34, stage.clientWidth / stage.clientHeight, .05, 500);
 const renderer = new THREE.WebGLRenderer({ antialias: false });
 renderer.setPixelRatio(1); renderer.setSize(stage.clientWidth, stage.clientHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -86,14 +87,18 @@ const OBJECT_INDEX = {
  note: { num: '04', name: 'NOTES', desc: 'Sticky fragments of half-formed plans. Cheap paper, expensive thoughts.', type: 'Physical Object', material: 'Paper', added: '2024-03-02', tags: 'Ideas, Sketches' },
  frame: { num: '05', name: 'FRAME', desc: 'A small window into somewhere else. A reminder that desks sit in rooms, and rooms in the world.', type: 'Physical Object', material: 'Wood, Glass', added: '2023-06-17', tags: 'Memory, Art' },
  lamp: { num: '06', name: 'LAMP', desc: 'Keeps the ideas lit after dark. The last thing switched off at night.', type: 'Physical Object', material: 'Metal', added: '2023-09-30', tags: 'Light, Focus' },
- greenCabinet: { num: '09', name: '文件柜 CABINET', desc: '归档的秩序：分类、收纳的桌面。\nThe order of archiving: classification, storage, and institutional desks.', type: '归档与秩序', material: '—', added: '—', tags: '归档, 收纳, 制度' }
+ greenCabinet: { num: '09', name: '文件柜 CABINET', desc: '归档的秩序：分类、收纳的桌面。\nThe order of archiving: classification, storage, and institutional desks.', type: '归档与秩序', material: '—', added: '—', tags: '归档, 收纳, 制度' },
+ dining: { num: '02', name: '餐桌 DINING TABLE', desc: '围坐与共享的平面：一日三餐、节庆、谈判与家庭仪式，都发生在这张桌子上。\nA surface for gathering and sharing — daily meals, feasts, negotiations and family rituals all happen here.', type: '桌面类型学', material: 'Wood, Glass', added: '—', tags: '聚餐, 仪式, 共享' },
+ drafting: { num: '04', name: '绘图桌 DRAWING TABLE', desc: '倾斜的平面：线条、比例与想象在这里落成图纸。\nA tilted surface where lines, proportions and imagination become drawings.', type: '桌面类型学', material: 'Wood, Metal', added: '—', tags: '绘图, 设计, 工作' },
+ school: { num: '03', name: '课桌 SCHOOL DESK', desc: '规训与求知的平面：一代人的晨读、考试与课间的刻痕。\nA surface of discipline and learning — morning readings, exams, and carvings between classes.', type: '桌面类型学', material: 'Wood, Metal', added: '—', tags: '教育, 规训, 记忆' },
+ altar: { num: '01', name: '祭坛 ALTAR', desc: '献祭与通灵的平面：火、供品与祈祷在此抵达另一重世界。\nA surface of sacrifice and communion — fire, offerings and prayers reaching another world.', type: '桌面类型学', material: 'Stone, Wood', added: '—', tags: '仪式, 信仰, 献祭' }
 };
 
 const meshGroup = new Map();
 let hoverGroup = null, selectedRole = null;
 const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
 window.deskDebug = { state: 'loading', modelUrl: new URL('./assets/desktop.glb', import.meta.url).href };
-let model;
+let model, deskModel = null, deskWrapper = null;
 function buildHoverGroups() {
  const groups = new Map();
  model.traverse(node => {
@@ -105,6 +110,18 @@ function buildHoverGroups() {
   group.meshes.push(node);
  });
  for (const group of groups.values()) group.meshes.forEach(mesh => meshGroup.set(mesh, group));
+ // Books piled on the file cabinets (model-local x < -6.5) are pure scenery:
+ // no hover fill, no pointer cursor, no click archive. The desk's own books
+ // stay interactive. Note: anchors sit inside a scaled/recentered wrapper,
+ // so compare in model-local (raw GLB) coordinates.
+ model.updateMatrixWorld(true);
+ const wp = new THREE.Vector3();
+ for (const [anchor, group] of groups) {
+  if (group.role !== 'book') continue;
+  anchor.getWorldPosition(wp);
+  model.worldToLocal(wp);
+  if (wp.x < -6.5) group.role = 'bookStatic';
+ }
 }
 function roleMeshes(role) {
  const meshes = [];
@@ -113,12 +130,16 @@ function roleMeshes(role) {
 }
 // Hover wins over the carousel selection; otherwise the selection glows.
 // Desk and chair are scenery: never color-filled.
-const NOFILL = { desk: 1, chair: 1, chairFrame: 1 };
+const NOFILL = { desk: 1, chair: 1, chairFrame: 1, bookStatic: 1, paperStatic: 1 };
+// Static scenery roles: raycast passes through them — no hover, no click.
+const STATIC = { bookStatic: 1, paperStatic: 1 };
 function refreshHighlight() {
  const role = hoverGroup ? hoverGroup.role : selectedRole;
- const meshes = hoverGroup ? hoverGroup.meshes : selectedRole ? roleMeshes(selectedRole) : null;
+ // Highlight every object of the same type: hovering one book lights all books.
+ const meshes = role ? roleMeshes(role) : null;
  if (meshes && meshes.length && !NOFILL[role]) ink.setHover(meshes, ACCENT); else ink.setHover(null);
- window.deskDebug = { ...window.deskDebug, fillRole: (meshes && meshes.length && !NOFILL[role]) ? role : null };
+ const filled = !!(meshes && meshes.length && !NOFILL[role]);
+ window.deskDebug = { ...window.deskDebug, fillRole: filled ? role : null, fillCount: filled ? meshes.length : 0 };
 }
 function showPanel(role) {
  const info = OBJECT_INDEX[role]; if (!info) return;
@@ -140,13 +161,16 @@ function select(role) {
  window.deskDebug = { ...window.deskDebug, selectedRole: role };
 }
 // Bottom bar is now a link bar to the stage sub-page; it no longer selects 3D objects.
-for (const cell of document.querySelectorAll('#carousel .cell')) cell.addEventListener('click', () => { if (cell.dataset.link) { if (window.SFX) SFX.go(cell.dataset.link, 'click'); else location.href = cell.dataset.link; } });
+for (const cell of document.querySelectorAll('#carousel .cell')) cell.addEventListener('click', () => {
+ if (cell.dataset.view) { switchView(cell.dataset.view); return; }
+ if (cell.dataset.link) { if (window.SFX) SFX.go(cell.dataset.link, 'click'); else location.href = cell.dataset.link; }
+});
 function updateHover() {
  raycaster.setFromCamera(pointer, camera);
  let group = null;
  for (const hit of raycaster.intersectObject(model, true)) {
   const found = meshGroup.get(hit.object);
-  if (found) { group = found; break; }
+  if (found && !STATIC[found.role]) { group = found; break; }
  }
  if (group === hoverGroup) return;
  hoverGroup = group;
@@ -234,7 +258,7 @@ function dolly(factor) {
 }
 document.getElementById('zoom-in').addEventListener('click', () => { if (window.SFX) SFX.play('click'); dolly(.8); });
 document.getElementById('zoom-out').addEventListener('click', () => { if (window.SFX) SFX.play('click'); dolly(1.25); });
-document.getElementById('reset-view').addEventListener('click', () => { if (window.SFX) SFX.play('click'); if (model) frameDesk(); });
+document.getElementById('reset-view').addEventListener('click', () => { if (window.SFX) SFX.play('click'); if (model) (viewMode === 'desk' ? frameDesk() : frameView(viewMode)); });
 // Sound on/off toggle in the top nav.
 const soundBtn = document.getElementById('sound-btn');
 if (soundBtn) soundBtn.addEventListener('click', () => {
@@ -264,12 +288,71 @@ window.deskHoverPoints = role => {
 };
 window.deskSelect = select;
 function frameModel() {
+ // Force-refresh world matrices: freshly added view wrappers can carry stale
+ // matrices at framing time, which inflates the measured bounds and pushes
+ // the camera beyond the far plane (black screen).
+ model.updateWorldMatrix(true, true);
  const bounds = new THREE.Box3().setFromObject(model), size = bounds.getSize(new THREE.Vector3()), center = bounds.getCenter(new THREE.Vector3());
  controls.target.copy(center);
  const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
- const distance = Math.max(size.y / 2 / Math.tan(halfFov), Math.max(size.x, size.z) / 2 / (Math.tan(halfFov) * camera.aspect)) * (camera.aspect < 1 ? 1.5 : 1.85);
+ // Live stage aspect: camera.aspect is rewritten by the ink renderer and
+ // goes degenerate while the tab is hidden.
+ const rect = stage.getBoundingClientRect();
+ const aspect = rect.width > 200 && rect.height > 200 ? THREE.MathUtils.clamp(rect.width / rect.height, .75, 2) : 1;
+ const distance = Math.max(size.y / 2 / Math.tan(halfFov), Math.max(size.x, size.z) / 2 / (Math.tan(halfFov) * aspect)) * (aspect < 1 ? 1.5 : 1.85);
  camera.position.copy(center).add(new THREE.Vector3(-.78, .68, -1).normalize().multiplyScalar(distance));
  camera.lookAt(center); controls.update();
+}
+// Dining-table framing: near top-down view so the place settings read as a
+// plan, with a slight tilt to keep a hint of depth (and avoid a degenerate
+// straight-down orbit). Distance fits the table's footprint, not its height.
+function frameDining() {
+ model.updateWorldMatrix(true, true); // see frameModel: avoid stale-matrix bounds
+ const bounds = new THREE.Box3().setFromObject(model), size = bounds.getSize(new THREE.Vector3()), center = bounds.getCenter(new THREE.Vector3());
+ controls.target.copy(center);
+ const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
+ // Use the live stage aspect: camera.aspect is rewritten by the ink renderer
+ // and goes degenerate while the tab is hidden.
+ const rect = stage.getBoundingClientRect();
+ const aspect = rect.width > 200 && rect.height > 200 ? THREE.MathUtils.clamp(rect.width / rect.height, .75, 2) : 1;
+ const distance = Math.max(size.x, size.z) / 2 / (Math.tan(halfFov) * Math.min(aspect, 1)) * .85;
+ camera.position.copy(center).add(new THREE.Vector3(0, 1, -.12).normalize().multiplyScalar(distance));
+ camera.lookAt(center); controls.update();
+ window.deskCam = { camera, controls };
+}
+// Drafting-desk framing: a hand-framed close-up along the tilted board,
+// frozen as the initial camera (position/target captured from a live session).
+function frameDrafting() {
+ controls.target.set(.2302, -.3134, .0613);
+ camera.position.set(5.8913, 2.7556, -5.5096);
+ camera.lookAt(controls.target); controls.update();
+ window.deskCam = { camera, controls };
+}
+// Orbit framing for typology views: pure math from the stored world size
+// (ensureView measured it from the raw bounds at load time). The wrapper is
+// centered at the origin, so the target is fixed — no setFromObject involved.
+function frameOrbit(view) {
+ const st = viewState[view];
+ const size = st && st.worldSize ? st.worldSize : new THREE.Vector3(7.6, 4, 7.6);
+ controls.target.set(0, 0, 0);
+ const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
+ // Clamp the stage aspect: a hidden/collapsed panel reports a degenerate
+ // rect (e.g. 32px wide), which would throw the camera hundreds of units
+ // away and leave a black screen.
+ const rect = stage.getBoundingClientRect();
+ const aspect = rect.width > 200 && rect.height > 200 ? THREE.MathUtils.clamp(rect.width / rect.height, .75, 2) : 1;
+ const distance = Math.max(size.y / 2 / Math.tan(halfFov), Math.max(size.x, size.z) / 2 / (Math.tan(halfFov) * aspect)) * (aspect < 1 ? 1.5 : 1.85);
+ camera.position.copy(new THREE.Vector3(-.78, .68, -1).normalize().multiplyScalar(distance));
+ camera.lookAt(0, 0, 0); controls.update();
+ window.deskCam = { camera, controls };
+ window.deskDebug = { ...window.deskDebug, framed: view, frameDist: distance };
+}
+// Dispatch the initial/reset framing for a typology view.
+function frameView(view) {
+ const kind = VIEW_MODELS[view].frame;
+ if (kind === 'topdown') frameDining();
+ else if (kind === 'fixed') frameDrafting();
+ else frameOrbit(view);
 }
 function roleBox(roles) {
  const box = new THREE.Box3(); let found = false;
@@ -318,13 +401,130 @@ async function load() {
     }
   });
   scene.add(wrapper); wrapper.updateMatrixWorld(true); frameDesk(); buildHoverGroups();
+  deskModel = model; deskWrapper = wrapper;
   stepStatus(GLB_STEP, 'OK', true); completedSteps = GLB_STEP + 1; glbFraction = 0; updateLoader();
   glbDone = true; maybeFinishLoader();
-  select('book');
+  // Populate the info panel on load without a blue selection fill: books
+  // should only glow while actually hovered in the 3D view.
+  showPanel('book');
+  // The desk scene is the 电脑桌 (computer desk) view: mark its cell active.
+  for (const cell of document.querySelectorAll('#carousel .cell')) cell.classList.toggle('selected', cell.dataset.view === 'desk');
   window.deskDebug = { ...window.deskDebug, state: 'ready', ...report };
+  // Deep link: index.html#dining / #drafting opens straight into that view.
+  const deepView = location.hash.slice(1);
+  if (VIEW_MODELS[deepView]) switchView(deepView);
  } catch (error) {
   console.error('Desk model failed:', error); window.deskDebug.state = 'error'; window.deskDebug.error = error.message;
   failLoader(error);
+ }
+}
+// ---- in-place typology views: the center 3D stage swaps to another desk ----
+// model while all the surrounding chrome (top bar, side panel, bottom bar,
+// zoom buttons) stays exactly where it is.
+const VIEW_MODELS = {
+ dining: { url: new URL('./assets/dining-table.glb', import.meta.url).href, label: 'DINING TABLE', frame: 'topdown' },
+ drafting: { url: new URL('./assets/drafting-desk.glb', import.meta.url).href, label: 'DRAWING TABLE', frame: 'fixed' },
+ school: { url: new URL('./assets/school-desk.glb', import.meta.url).href, label: 'SCHOOL DESK', frame: 'orbit' },
+ altar: { url: new URL('./assets/altar.glb', import.meta.url).href, label: 'ALTAR', frame: 'orbit' }
+};
+const viewState = {}; // view -> { model, wrapper, promise }
+let viewMode = 'desk';
+// Same grayscale quantization as dining.html: every material becomes a flat
+// shade of gray derived from its texture's average luminance (5 levels).
+const GRAYS = ['#ffffff', '#e2e2e2', '#a6a6a6', '#4f4f4f', '#131313'];
+function grayFor(l) { return l > .78 ? GRAYS[0] : l > .60 ? GRAYS[1] : l > .44 ? GRAYS[2] : l > .27 ? GRAYS[3] : GRAYS[4]; }
+function averageLuminance(image) {
+ const canvas = document.createElement('canvas');
+ const w = canvas.width = Math.min(64, image.width), h = canvas.height = Math.min(64, image.height);
+ const ctx = canvas.getContext('2d', { willReadFrequently: true });
+ ctx.drawImage(image, 0, 0, w, h);
+ const data = ctx.getImageData(0, 0, w, h).data;
+ let sum = 0;
+ for (let i = 0; i < data.length; i += 4) sum += (data[i] * .2126 + data[i + 1] * .7152 + data[i + 2] * .0722) / 255;
+ return sum / (data.length / 4);
+}
+function recolorGrayscale(root) {
+ // All volumes are pure white against the black void: darker materials would
+ // disappear into the background. The ink renderer supplies the black
+ // outlines, so form still reads clearly.
+ const cache = new Map();
+ root.traverse(node => {
+  if (!node.isMesh) return;
+  node.castShadow = true; node.receiveShadow = true;
+  const source = Array.isArray(node.material) ? node.material[0] : node.material;
+  if (!cache.has(source)) cache.set(source, new THREE.MeshStandardMaterial({ color: GRAYS[0], roughness: .95, metalness: 0, flatShading: true }));
+  node.material = cache.get(source);
+ });
+}
+function viewLoading(text) {
+ let el = document.getElementById('view-loading');
+ if (!el) {
+  el = document.createElement('div'); el.id = 'view-loading';
+  el.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.62);color:#fff;font-family:VT323,"Courier New",monospace;font-size:24px;letter-spacing:.22em;z-index:30;pointer-events:none;';
+  document.getElementById('app').appendChild(el);
+ }
+ el.textContent = text;
+ el.style.display = text ? 'flex' : 'none';
+}
+function ensureView(view) {
+ const cfg = VIEW_MODELS[view];
+ const st = viewState[view] || (viewState[view] = {});
+ if (st.promise) return st.promise;
+ st.promise = new GLTFLoader().loadAsync(cfg.url, xhr => {
+  if (xhr.total) viewLoading('LOADING ' + cfg.label + ' ' + Math.round(xhr.loaded / xhr.total * 100) + '%');
+ }).then(gltf => {
+  st.model = gltf.scene; st.model.updateMatrixWorld(true);
+  const bounds = new THREE.Box3().setFromObject(st.model), size = bounds.getSize(new THREE.Vector3()), center = bounds.getCenter(new THREE.Vector3());
+  const scale = 7.6 / Math.max(size.x, size.z);
+  // Store the post-scale world size: orbit framing uses this instead of
+  // re-measuring setFromObject, which can return stale/inflated bounds.
+  st.worldSize = size.clone().multiplyScalar(scale);
+  st.wrapper = new THREE.Group();
+  st.wrapper.add(st.model);
+  st.wrapper.scale.setScalar(scale);
+  // No floor in these views: center the model vertically in the black void.
+  st.wrapper.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+  recolorGrayscale(st.model);
+  st.wrapper.visible = false;
+  scene.add(st.wrapper); st.wrapper.updateMatrixWorld(true);
+ });
+ return st.promise;
+}
+function setView(mode) {
+ viewMode = mode;
+ const isDesk = mode === 'desk';
+ const st = viewState[mode];
+ if (deskWrapper) deskWrapper.visible = isDesk;
+ for (const [v, s] of Object.entries(viewState)) if (s.wrapper) s.wrapper.visible = v === mode;
+ model = isDesk ? deskModel : st && st.model;
+ hoverGroup = null; selectedRole = null;
+ renderer.domElement.style.cursor = '';
+ meshGroup.clear();
+ if (isDesk) buildHoverGroups(); // typology models are purely visual: no hover, no click
+ refreshHighlight();
+ for (const cell of document.querySelectorAll('#carousel .cell')) cell.classList.toggle('selected', cell.dataset.view === mode);
+ if (isDesk) { frameDesk(); showPanel('book'); }
+ else { frameView(mode); showPanel(mode); }
+ window.deskDebug = { ...window.deskDebug, view: viewMode };
+}
+// Bottom bar view switcher: 电脑桌 shows the desk scene, 餐桌 the dining
+// table, 绘图桌 the drafting desk. Clicking the active view's cell is a no-op.
+async function switchView(view) {
+ if (window.SFX) SFX.play('click');
+ if (view === viewMode) return;
+ if (view === 'desk') { setView('desk'); return; }
+ const cfg = VIEW_MODELS[view];
+ if (!cfg) return;
+ viewLoading('LOADING ' + cfg.label + ' …');
+ try {
+  await ensureView(view);
+  setView(view);
+  viewLoading('');
+ } catch (error) {
+  console.error(view + ' model failed:', error);
+  if (viewState[view]) viewState[view].promise = null;
+  viewLoading('模型加载失败 FAILED');
+  setTimeout(() => viewLoading(''), 1600);
  }
 }
 new ResizeObserver(() => {

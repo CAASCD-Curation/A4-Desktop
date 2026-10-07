@@ -20,7 +20,8 @@ function classify(mesh, root) {
   if (/phone/.test(name)) return { role: 'phone', node: n };
   if (/^box/.test(name)) return { role: 'box', node: n };
   if (/trash|empty_cup/.test(name)) return { role: 'ivory', node: n };
-  if (/keyboard|monitor|pc_case/.test(name)) return { role: 'computer', node: n };
+  if (/keyboard|monitor|pc_case|mouse/.test(name)) return { role: 'computer', node: n };
+  if (/paper/.test(name)) return { role: 'paperStatic', node: n };
   if (/sticky_note/.test(name)) return { role: 'note', node: n };
  }
  return { role: 'accessory', node: mesh };
